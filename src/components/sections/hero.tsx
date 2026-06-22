@@ -101,7 +101,7 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
 
           {/* Left Side: Content & Statistics (55% Width) */}
           <motion.div
-            className="space-y-8 text-left w-full lg:w-[55%] flex flex-col justify-center order-2 lg:order-1 relative z-10"
+            className="space-y-8 text-left w-full lg:w-[55%] flex flex-col justify-center order-1 lg:order-2 relative z-10"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -252,7 +252,7 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
           </motion.div>
 
           {/* Right Side: Developer Image & Blended Snippet Background (45% Width) */}
-          <div className="relative w-full h-full lg:w-[45%] flex items-center justify-center select-none shrink-0 py-8 order-1 lg:order-2">
+          <div className="relative hidden lg:block w-full h-full lg:w-[45%] flex items-center justify-center select-none shrink-0 py-8 order-1 lg:order-2">
             <div
               className="absolute inset-0 z-0"
               style={{

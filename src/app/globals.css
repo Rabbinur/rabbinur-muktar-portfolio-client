@@ -103,13 +103,18 @@
   --secondary: #FF7849;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   transition-property: background-color, border-color, color, fill, stroke;
   transition-duration: 300ms;
-  overflow-x: hidden;
 }
 
 h1,

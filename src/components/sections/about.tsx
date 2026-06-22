@@ -38,7 +38,7 @@ export default function About({ settings, projectCount }: AboutProps) {
   ];
 
   return (
-    <section id="about" className="py-32 relative bg-background border-y border-border/40">
+    <section id="about" className="py-20 lg:py-24 relative bg-background border-y border-border/40">
       {/* Visual background continuous with hero */}
       <div className="absolute inset-0 grid-bg-overlay opacity-10 pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#6366f1]/5 blur-[120px] rounded-full pointer-events-none" />

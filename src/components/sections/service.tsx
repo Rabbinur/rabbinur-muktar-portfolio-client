@@ -42,7 +42,7 @@ const Services = ({ settings, projectCount }: AboutProps) => {
     return (
         <section
             id="services"
-            className="relative py-32 overflow-hidden bg-gradient-to-r from-[#faf7f5] to-[#e2f0fe]"
+            className="relative py-20 lg:py-24  overflow-hidden bg-gradient-to-r from-[#faf7f5] to-[#e2f0fe]"
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid lg:grid-cols-2 gap-16 items-start">

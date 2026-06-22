@@ -65,7 +65,7 @@ export default function ContactSection() {
     // পুরো সেকশনের ব্যাকগ্রাউন্ডে প্রিমিয়াম লিনিয়ার গ্রেডিয়েন্ট
     <section 
       id="contact" 
-      className="py-24 relative overflow-hidden bg-gradient-to-br from-[#fafcff] via-[#f1f5ff] to-[#fff5f2] border-t border-black/[0.03]"
+      className="py-20 lg:py-24  relative overflow-hidden bg-gradient-to-br from-[#fafcff] via-[#f1f5ff] to-[#fff5f2] border-t border-black/[0.03]"
     >
       {/* ব্যাকগ্রাউন্ডের ভেতরের সফট গ্লো অরবিটস */}
       <div className="absolute top-12 left-1/4 w-[400px] h-[400px] bg-[#4745a7]/5 rounded-full blur-[120px] pointer-events-none" />

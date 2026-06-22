@@ -23,6 +23,17 @@ export default function Navbar() {
   }, []);
   useEffect(() => setMounted(true), []);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   const navLinks = [
     { label: "Home", href: "/#home" },
     { label: "About", href: "/#about" },
@@ -40,7 +51,7 @@ export default function Navbar() {
           : "bg-transparent border-transparent"
         }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/#home" className="flex items-center gap-2 group">
@@ -52,7 +63,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-xs font-black uppercase tracking-wider text-muted-foreground">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-xs font-black uppercase tracking-wider text-muted-foreground">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -65,7 +76,7 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action buttons */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-4">
             {/* Theme Toggle */}
             {mounted && (
               <button
@@ -86,7 +97,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex items-center gap-2.5 md:hidden">
+          <div className="flex items-center gap-2.5 lg:hidden">
             {mounted && (
               <button
                 onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
@@ -116,7 +127,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
             />
 
             {/* Sliding Drawer */}
@@ -125,7 +136,7 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-72 bg-background border-l border-border/40 p-6 flex flex-col justify-between shadow-2xl md:hidden"
+              className="fixed top-0 right-0 bottom-0 z-50 w-72 bg-background border-l border-border/40 p-6 flex flex-col justify-between shadow-2xl lg:hidden overflow-y-auto"
             >
               <div className="space-y-6">
                 <div className="flex items-center justify-between">

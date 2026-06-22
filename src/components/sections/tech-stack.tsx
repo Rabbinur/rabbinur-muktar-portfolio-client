@@ -205,7 +205,7 @@ export default function TechStackSection() {
   const [selectedTech, setSelectedTech] = useState<any>(null);
 
   return (
-    <section id="skills" className="relative py-24 px-4  bg-[#fafcff] text-[#0f172a]">
+    <section id="skills" className="relative py-20 lg:py-24  px-4  bg-[#fafcff] text-[#0f172a]">
       {/* হেডার */}
       <div className="relative mb-16 text-center max-w-7xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#0f172a]">

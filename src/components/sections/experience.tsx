@@ -83,7 +83,7 @@ export default function Experience({ experiences = [] }: { experiences: any[] })
   const [selectedExp, setSelectedExp] = useState<any>(null);
 
   return (
-    <section id="experience" className="py-24 relative bg-[#f2f2ff] border-y border-black/[0.04]">
+    <section id="experience" className="py-20 lg:py-24  relative bg-[#f2f2ff] border-y border-black/[0.04]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
 
         {/* হেডার */}

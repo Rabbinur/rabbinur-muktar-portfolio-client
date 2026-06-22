@@ -49,7 +49,7 @@ export default function ProjectsSection() {
   };
 
   return (
-    <section id="projects" className="relative bg-[#ebe3fa] py-24">
+    <section id="projects" className="relative bg-[#ebe3fa] py-20 lg:py-24 ">
       <div className="mx-auto max-w-7xl px-6">
         
         <div className="mb-20 text-center">

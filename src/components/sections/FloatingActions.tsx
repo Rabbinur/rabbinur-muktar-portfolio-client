@@ -44,7 +44,7 @@ export default function FloatingActions() {
             </div>
 
             {/* 🟠 ডানে: Download CV Floating Button */}
-            <div className="fixed bottom-6 right-6 z-50">
+            <div className="fixed bottom-6 right-10 sm:right-6 lg:right-6 z-50">
                 <motion.a
                     href="/your-cv.pdf" // এখানে আপনার CV ফাইলের পাথটি বসাবেন public ফোল্ডার থেকে
                     download="My_CV.pdf" // ফাইলটি ডাউনলোড করার জন্য ব্রাউজার ট্রিগার

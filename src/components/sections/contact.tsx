@@ -65,7 +65,7 @@ export default function Contact({ settings, apiUrl }: { settings: any; apiUrl: s
   };
 
   return (
-    <section id="contact" className="py-32 relative bg-background overflow-hidden border-t border-border/40">
+    <section id="contact" className="py-20 lg:py-24  relative bg-background overflow-hidden border-t border-border/40">
       {/* Soft orange/purple glows matching design */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#6366f1]/5 blur-[120px] rounded-full pointer-events-none" />
 
