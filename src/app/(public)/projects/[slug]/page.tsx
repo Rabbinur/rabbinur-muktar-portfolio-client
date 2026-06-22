@@ -227,7 +227,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
       </main>
 
-      <Footer settings={null} />
+      <Footer />
     </div>
   );
 }

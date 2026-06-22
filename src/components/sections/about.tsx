@@ -1,104 +1,145 @@
 "use client";
 
-import { Award, CheckCircle, Code2, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Code2, Database, Server, Sparkles } from "lucide-react";
+import ServicePills from "./Pill";
+import SkillCloud from "./SkillCloud";
 
-interface AboutProps {
+export interface AboutProps {
   settings: any;
   projectCount: number;
-  experiences: any[];
 }
 
-export default function About({ settings, projectCount, experiences = [] }: AboutProps) {
+export default function About({ settings, projectCount }: AboutProps) {
   const personal = settings?.personalInfo || {};
 
-  const stats = [
-    { label: "Completed Projects", value: `${projectCount || 4}+` },
-    { label: "Client satisfaction", value: "99%" },
-    { label: "Years experience", value: "3+" },
+  const services = [
+    {
+      title: "Front-end Development",
+      description: "Next.js, React.js, TypeScript, and Tailwind CSS structures.",
+      projectsCount: `${projectCount * 3 || 12} Projects`,
+      icon: <Code2 className="w-5 h-5 text-[#FF7849]" />,
+      bg: "bg-orange-500/10 border-orange-500/20",
+    },
+    {
+      title: "Back-end Engineering",
+      description: "Node.js, Express.js REST APIs, and authentication flows.",
+      projectsCount: `${projectCount * 2 || 8} Projects`,
+      icon: <Server className="w-5 h-5 text-[#6366f1]" />,
+      bg: "bg-indigo-500/10 border-indigo-500/20",
+    },
+    {
+      title: "Database & Architecture",
+      description: "MongoDB collections, AWS S3 storage, and performance tuning.",
+      projectsCount: `${projectCount || 4} Projects`,
+      icon: <Database className="w-5 h-5 text-emerald-500" />,
+      bg: "bg-emerald-500/10 border-emerald-500/20",
+    },
   ];
 
   return (
-    <section id="about" className="py-28 relative bg-[#05070a] border-y border-border/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20 relative z-10">
-        
-        {/* Grid layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          
-          {/* Left Column: Dynamic Timeline (Services layout matching template) */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h3 className="text-xs font-black uppercase text-secondary tracking-widest flex items-center gap-2">
-                <Code2 size={14} />
-                Professional Timeline
-              </h3>
-              <h2 className="text-3xl font-heading font-black text-white tracking-tight leading-none">
-                My Experience
-              </h2>
-            </div>
+    <section id="about" className="py-32 relative bg-background border-y border-border/40">
+      {/* Visual background continuous with hero */}
+      <div className="absolute inset-0 grid-bg-overlay opacity-10 pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#6366f1]/5 blur-[120px] rounded-full pointer-events-none" />
 
-            {/* Vertical timeline line */}
-            <div className="relative border-l border-secondary/20 pl-8 ml-3 space-y-10 pt-2 pb-2">
-              {experiences.length > 0 ? (
-                experiences.map((exp: any, idx: number) => (
-                  <div key={idx} className="relative space-y-1">
-                    {/* Glowing Accent Dot */}
-                    <span className="absolute -left-[37px] top-1 h-[11px] w-[11px] rounded-full bg-secondary border-2 border-[#05070a] shadow-[0_0_10px_rgba(255,107,74,0.8)]" />
-                    
-                    <span className="text-[10px] font-black uppercase text-secondary tracking-widest">{exp.duration}</span>
-                    <h4 className="text-base font-heading font-black text-white">{exp.role}</h4>
-                    <p className="text-xs text-slate-400 font-semibold">{exp.company} — {exp.location}</p>
-                    
-                    {exp.description && exp.description.length > 0 && (
-                      <ul className="text-xs text-slate-500 font-medium space-y-1.5 list-disc pl-4 pt-2">
-                        {exp.description.map((bullet: string, i: number) => (
-                          <li key={i}>{bullet}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="text-slate-400 text-xs font-bold">No experiences added yet.</div>
-              )}
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-          {/* Right Column: About Details and Stats */}
-          <div className="space-y-8 lg:pt-2">
+          {/* Left Column: Why Hire Me Narrative */}
+          <motion.div
+            className="space-y-8 text-left"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
             <div className="space-y-4">
-              <h3 className="text-xs font-black uppercase text-secondary tracking-widest flex items-center gap-2">
-                <Sparkles size={14} />
-                About me
-              </h3>
-              <h2 className="text-3xl font-heading font-black text-white tracking-tight leading-none">
-                The Developer Story
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary">
+                <Sparkles size={14} className="animate-pulse" />
+                <span>About Me</span>
+              </div>
+
+              <h2 className="text-4xl sm:text-5xl font-heading font-black text-foreground leading-none tracking-tight">
+                Why you <span className="text-[#FF7849]">hire me</span> for<br />
+                <span className="text-slate-500 block mt-2 ">your <span className="text-primary">next project?</span> </span>
               </h2>
-              <p className="text-sm font-medium text-slate-400 leading-relaxed whitespace-pre-line">
+
+              <p className="text-sm font-medium text-slate-600  leading-relaxed pt-2">
                 {personal.bio ||
                   "I am a passionate Full Stack Developer with professional experience building web applications. Specializing in JavaScript, TypeScript, Next.js, and Node.js, I bridge the gap between backend scalability and sleek frontend aesthetics. I love crafting products that solve real-world problems while delivering exceptional user experiences."}
               </p>
             </div>
 
-            {/* Statistics Bento Grid */}
-            <div className="grid grid-cols-3 gap-4 pt-4">
-              {stats.map((st) => (
-                <div
-                  key={st.label}
-                  className="bg-[#0b0f19]/30 border border-border/5 p-6 rounded-2xl text-center space-y-2 hover:border-secondary/20 transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.02)]"
-                >
-                  <p className="text-2xl sm:text-3xl font-heading font-black text-secondary leading-none">
-                    {st.value}
-                  </p>
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-wider leading-none">
-                    {st.label}
-                  </p>
-                </div>
-              ))}
+            <div className="pt-2">
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 bg-[#FF7849] hover:bg-[#FF7849]/90 text-white font-bold text-xs px-8 py-3.5 rounded-md transition-all duration-300 shadow-[0_4px_20px_rgba(255,120,73,0.15)]"
+              >
+                Hire Me
+                <ArrowRight size={13} />
+              </a>
             </div>
-          </div>
+          </motion.div>
+
+          {/* Right Column: Stack Cards (Jhon Smith Visual Layout) */}
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {services.map((svc, idx) => (
+              <motion.div
+                key={idx}
+                className="
+                  glass-card
+                  p-5 sm:p-6
+                  rounded-2xl
+                  flex
+                  flex-col sm:flex-row
+                  sm:items-center
+                  justify-between
+                  gap-4 sm:gap-6
+                  transition-all
+                  duration-500
+                  origin-bottom-left
+                "
+                whileHover={{
+                  y: -12,
+                  scale: 1.03,
+                  rotate: -1,
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`p-3.5 rounded-xl border shrink-0 ${svc.bg}`}>
+                    {svc.icon}
+                  </div>
+                  <div className="text-left space-y-1">
+                    <h3 className="font-heading font-black text-base text-foreground animate-in">
+                      {svc.title}
+                    </h3>
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 leading-relaxed">
+                      {svc.description}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-left sm:text-right shrink-0 pl-14 sm:pl-0">
+                  <span className="text-[10px] font-black uppercase text-[#FF7849] bg-[#FF7849]/5 border border-[#FF7849]/10 px-3 py-1.5 rounded-full tracking-wider inline-block">
+                    {svc.projectsCount}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
 
         </div>
       </div>
+
+  
     </section>
   );
 }

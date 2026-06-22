@@ -1,28 +1,33 @@
+"use client";
+
 import { Github, Linkedin, Twitter, Facebook } from "lucide-react";
 import Link from "next/link";
+import { useGetSettingsQuery } from "@/components/Redux/RTK/portfolioApi";
 
-export default function Footer({ settings }: { settings: any }) {
+export default function Footer() {
+  const { data: settingsRes } = useGetSettingsQuery(undefined);
+  const settings = settingsRes?.data || {};
   const socials = settings?.socialLinks || {};
   const personal = settings?.personalInfo || {};
 
   return (
-    <footer className="border-t border-border/10 bg-[#05070a] py-16 relative overflow-hidden">
+    <footer className="border-t border-border/40 bg-slate-50 dark:bg-slate-50 py-16 relative overflow-hidden">
       {/* Subtle bottom glow effect */}
       <div className="absolute bottom-0 right-1/4 w-[350px] h-[350px] bg-secondary/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Upper Row: Name Brand & Social Buttons */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-10 border-b border-border/10">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-10 border-b border-border/40">
           
           {/* Logo Name & Short Desc */}
           <div className="text-center md:text-left space-y-2">
             <Link href="#home" className="inline-block group">
-              <span className="font-heading font-black text-xl tracking-tight text-white transition-colors group-hover:text-secondary">
+              <span className="font-heading font-black text-xl tracking-tight text-foreground transition-colors group-hover:text-secondary">
                 {personal.name || "Rabbinur Muktar"}<span className="text-secondary">.</span>
               </span>
             </Link>
-            <p className="text-xs text-slate-400 font-medium max-w-sm">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-sm">
               {personal.role || "Full Stack Developer"} based in {personal.location || "Bangladesh"}. Crafting high-fidelity, premium web solutions.
             </p>
           </div>
@@ -83,11 +88,11 @@ export default function Footer({ settings }: { settings: any }) {
           </p>
           
           <div className="flex items-center gap-6">
-            <a href="#about" className="hover:text-white transition-colors">About</a>
-            <span className="text-slate-800">•</span>
-            <a href="#projects" className="hover:text-white transition-colors">Projects</a>
-            <span className="text-slate-800">•</span>
-            <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+            <a href="#about" className="hover:text-secondary transition-colors">About</a>
+            <span className="text-slate-300 dark:text-slate-800">•</span>
+            <a href="#projects" className="hover:text-secondary transition-colors">Projects</a>
+            <span className="text-slate-300 dark:text-slate-800">•</span>
+            <a href="#contact" className="hover:text-secondary transition-colors">Contact</a>
           </div>
         </div>
 
