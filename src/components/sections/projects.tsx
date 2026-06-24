@@ -281,7 +281,7 @@ export default function ProjectsSection() {
                         height={500}
                         className="
                 w-full
-                max-h-[350px]
+                max-h-[450px]
                 object-cover
                 transition-transform
                 duration-500

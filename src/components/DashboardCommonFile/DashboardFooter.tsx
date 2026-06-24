@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Globe, Heart, Zap } from "lucide-react";
+import Image from "next/image";
 
 export const DashboardFooter = () => {
     const currentYear = new Date().getFullYear();
@@ -20,9 +21,14 @@ export const DashboardFooter = () => {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 border-r border-slate-200 pr-4">
                             <div className="w-2 h-2 rounded-full bg-[#001f3f] animate-pulse" />
-                            <span className="text-[#001f3f] font-black text-sm tracking-tight uppercase">
-                                Kamrul&apos;s <span className="text-blue-600">Dealer</span>
-                            </span>
+                            <Image
+                                src="/rabbinur-logo.png"
+                                alt="logo"
+                                width={250}
+                                height={250}
+                                priority
+                                className="object-contain"
+                            />
                         </div>
                         <p className="hidden md:block text-slate-400 text-[11px] font-medium tracking-wide">
                             {currentYear} © All Rights Reserved.

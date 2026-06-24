@@ -2,13 +2,13 @@
 
 import { useCreateProjectMutation, useUploadSingleImageMutation, useUploadMultipleImagesMutation } from "@/components/Redux/RTK/portfolioApi";
 import { useRouter } from "next/navigation";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, Loader2, X, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Upload, Loader2, X } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const projectFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -33,17 +33,34 @@ type ProjectFormValues = z.infer<typeof projectFormSchema>;
 export default function AddProjectPage() {
   const router = useRouter();
   const [createProject, { isLoading: isSubmitting }] = useCreateProjectMutation();
-  const [uploadSingle, { isLoading: isUploadingThumbnail }] = useUploadSingleImageMutation();
-  const [uploadMultiple, { isLoading: isUploadingScreenshots }] = useUploadMultipleImagesMutation();
+  const [uploadSingle] = useUploadSingleImageMutation();
+  const [uploadMultiple] = useUploadMultipleImagesMutation();
 
   const [techList, setTechList] = useState<string[]>([]);
   const [featureList, setFeatureList] = useState<string[]>([]);
+
+  // Pending files — held locally until Save is clicked
+  const [pendingThumbnail, setPendingThumbnail] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+  const [pendingScreenshots, setPendingScreenshots] = useState<File[]>([]);
+  const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>([]);
+
+  // Track object URLs so we can revoke them
+  const thumbnailObjUrl = useRef<string>("");
+  const screenshotObjUrls = useRef<string[]>([]);
+
+  // Cleanup object URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (thumbnailObjUrl.current) URL.revokeObjectURL(thumbnailObjUrl.current);
+      screenshotObjUrls.current.forEach((u) => URL.revokeObjectURL(u));
+    };
+  }, []);
 
   const {
     register,
     handleSubmit,
     setValue,
-    getValues,
     watch,
     formState: { errors },
   } = useForm<ProjectFormValues>({
@@ -67,59 +84,51 @@ export default function AddProjectPage() {
     },
   });
 
-  const thumbnailVal = watch("thumbnail");
-  const screenshotsVal = watch("screenshots") || [];
-
-  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // ── Thumbnail — store file locally, show preview ──────────────────────────
+  const handleThumbnailSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await uploadSingle(formData).unwrap();
-      if (res?.success && res?.data?.url) {
-        setValue("thumbnail", res.data.url);
-        toast.success("Thumbnail uploaded successfully");
-      } else {
-        toast.error("Upload response missing URL");
-      }
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to upload thumbnail");
-    }
+    // Revoke previous
+    if (thumbnailObjUrl.current) URL.revokeObjectURL(thumbnailObjUrl.current);
+    const url = URL.createObjectURL(file);
+    thumbnailObjUrl.current = url;
+    setPendingThumbnail(file);
+    setThumbnailPreview(url);
+    // Clear any previously uploaded URL from form
+    setValue("thumbnail", "__pending__");
   };
 
-  const handleScreenshotsUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const removeThumbnail = () => {
+    if (thumbnailObjUrl.current) URL.revokeObjectURL(thumbnailObjUrl.current);
+    thumbnailObjUrl.current = "";
+    setPendingThumbnail(null);
+    setThumbnailPreview("");
+    setValue("thumbnail", "");
+  };
+
+  // ── Screenshots — store files locally, show previews ─────────────────────
+  const handleScreenshotsSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-
-    const formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      formData.append("files", files[i]);
-    }
-
-    try {
-      const res = await uploadMultiple(formData).unwrap();
-      if (res?.success && res?.data?.urls) {
-        const urls = res.data.urls;
-        setValue("screenshots", [...screenshotsVal, ...urls]);
-        toast.success("Screenshots uploaded successfully");
-      } else {
-        toast.error("Upload response missing URLs");
-      }
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to upload screenshots");
-    }
+    const newFiles = Array.from(files);
+    const newUrls = newFiles.map((f) => URL.createObjectURL(f));
+    screenshotObjUrls.current = [...screenshotObjUrls.current, ...newUrls];
+    setPendingScreenshots((prev) => [...prev, ...newFiles]);
+    setScreenshotPreviews((prev) => [...prev, ...newUrls]);
   };
 
+  const removeScreenshot = (index: number) => {
+    URL.revokeObjectURL(screenshotPreviews[index]);
+    screenshotObjUrls.current = screenshotObjUrls.current.filter((_, i) => i !== index);
+    setPendingScreenshots((prev) => prev.filter((_, i) => i !== index));
+    setScreenshotPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ── Tech stack ────────────────────────────────────────────────────────────
   const addTechTag = () => {
     const val = watch("techStackInput")?.trim();
     if (!val) return;
-    if (techList.includes(val)) {
-      toast.error("Tag already exists");
-      return;
-    }
+    if (techList.includes(val)) { toast.error("Tag already exists"); return; }
     const updated = [...techList, val];
     setTechList(updated);
     setValue("techStack", updated);
@@ -132,13 +141,11 @@ export default function AddProjectPage() {
     setValue("techStack", updated);
   };
 
+  // ── Features ──────────────────────────────────────────────────────────────
   const addFeature = () => {
     const val = watch("featuresInput")?.trim();
     if (!val) return;
-    if (featureList.includes(val)) {
-      toast.error("Feature already exists");
-      return;
-    }
+    if (featureList.includes(val)) { toast.error("Feature already exists"); return; }
     const updated = [...featureList, val];
     setFeatureList(updated);
     setValue("features", updated);
@@ -151,29 +158,64 @@ export default function AddProjectPage() {
     setValue("features", updated);
   };
 
-  const removeScreenshot = (index: number) => {
-    const updated = screenshotsVal.filter((_, i) => i !== index);
-    setValue("screenshots", updated);
-  };
-
+  // ── Form submit — upload then save ────────────────────────────────────────
   const onSubmit = async (values: ProjectFormValues) => {
     if (techList.length === 0) {
       toast.error("Please add at least one tech stack tag");
       return;
     }
+    if (!pendingThumbnail && !thumbnailPreview) {
+      toast.error("Please select a thumbnail image");
+      return;
+    }
+
     try {
+      let thumbnailUrl = "";
+      let screenshotUrls: string[] = [];
+
+      // 1. Upload thumbnail if a new file was selected
+      if (pendingThumbnail) {
+        const fd = new FormData();
+        fd.append("file", pendingThumbnail);
+        const thumbRes = await uploadSingle(fd).unwrap();
+        if (!thumbRes?.success || !thumbRes?.data?.url) {
+          toast.error(thumbRes?.message || "Thumbnail upload failed");
+          return;
+        }
+        thumbnailUrl = thumbRes.data.url;
+      }
+
+      // 2. Upload screenshots if any pending
+      if (pendingScreenshots.length > 0) {
+        const fd = new FormData();
+        pendingScreenshots.forEach((f) => fd.append("files", f));
+        const ssRes = await uploadMultiple(fd).unwrap();
+        if (!ssRes?.success || !Array.isArray(ssRes?.data)) {
+          toast.error(ssRes?.message || "Screenshots upload failed");
+          return;
+        }
+        screenshotUrls = ssRes.data.map((item: { url: string }) => item.url);
+      }
+
+      // 3. Save project
       const payload = {
         ...values,
+        thumbnail: thumbnailUrl,
+        screenshots: screenshotUrls,
         techStack: techList,
         features: featureList,
       };
-      await createProject(payload).unwrap();
-      toast.success("Project created successfully");
+      const res = await createProject(payload).unwrap();
+      toast.success(res?.message || "Project created successfully");
       router.push("/dashboard/projects");
     } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to create project");
+      toast.error(err?.data?.message || err?.message || "Failed to create project");
     }
   };
+
+  const isSaving = isSubmitting;
+  const displayThumbnail = thumbnailPreview;
+  const displayScreenshots = screenshotPreviews;
 
   return (
     <div className="bg-slate-50/50 min-h-screen p-4 md:p-6 lg:p-8 space-y-6">
@@ -259,32 +301,29 @@ export default function AddProjectPage() {
 
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-4">
             <h2 className="text-base font-bold text-slate-700">Screenshots Carousel</h2>
-            
-            {/* Multiple Screenshots Upload */}
+
             <div className="space-y-3">
               <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100/50 transition-colors relative">
                 <input
                   type="file"
                   multiple
                   accept="image/*"
-                  onChange={handleScreenshotsUpload}
+                  onChange={handleScreenshotsSelect}
                   className="absolute inset-0 opacity-0 cursor-pointer"
-                  disabled={isUploadingScreenshots}
                 />
-                {isUploadingScreenshots ? (
-                  <Loader2 className="w-8 h-8 text-[#001f3f] animate-spin" />
-                ) : (
-                  <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                )}
-                <span className="text-xs text-slate-500 font-bold">Upload Showcase Screenshots</span>
+                <Upload className="w-8 h-8 text-slate-400 mb-2" />
+                <span className="text-xs text-slate-500 font-bold">
+                  {pendingScreenshots.length > 0
+                    ? `${pendingScreenshots.length} file(s) selected — will upload on save`
+                    : "Select Showcase Screenshots"}
+                </span>
                 <span className="text-[10px] text-slate-400 mt-1">Accepts multiple images</span>
               </div>
 
-              {/* Screenshots list */}
-              {screenshotsVal.length > 0 && (
+              {displayScreenshots.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-                  {screenshotsVal.map((url: string, index: number) => (
-                    <div key={url} className="relative h-20 rounded-lg border border-slate-100 overflow-hidden group">
+                  {displayScreenshots.map((url, index) => (
+                    <div key={index} className="relative h-20 rounded-lg border border-slate-100 overflow-hidden group">
                       <img src={url} alt={`Screenshot ${index}`} className="w-full h-full object-cover" />
                       <button
                         type="button"
@@ -301,18 +340,18 @@ export default function AddProjectPage() {
           </div>
         </div>
 
-        {/* Sidebar Info & Uploads */}
+        {/* Sidebar */}
         <div className="space-y-6">
-          {/* S3 Image Thumbnail */}
+          {/* Thumbnail */}
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-4">
             <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Thumbnail Image</h2>
-            
-            {thumbnailVal ? (
+
+            {displayThumbnail ? (
               <div className="relative h-40 rounded-xl border border-slate-200 overflow-hidden group bg-slate-50">
-                <img src={thumbnailVal} alt="Thumbnail" className="w-full h-full object-cover" />
+                <img src={displayThumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
                 <button
                   type="button"
-                  onClick={() => setValue("thumbnail", "")}
+                  onClick={removeThumbnail}
                   className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1.5 hover:bg-rose-600 transition-colors shadow-sm"
                 >
                   <X size={14} />
@@ -323,27 +362,23 @@ export default function AddProjectPage() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleThumbnailUpload}
+                  onChange={handleThumbnailSelect}
                   className="absolute inset-0 opacity-0 cursor-pointer"
-                  disabled={isUploadingThumbnail}
                 />
-                {isUploadingThumbnail ? (
-                  <Loader2 className="w-8 h-8 text-[#001f3f] animate-spin" />
-                ) : (
-                  <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                )}
-                <span className="text-xs text-slate-500 font-bold">Upload Main Thumbnail</span>
+                <Upload className="w-8 h-8 text-slate-400 mb-2" />
+                <span className="text-xs text-slate-500 font-bold">Select Main Thumbnail</span>
                 <span className="text-[10px] text-slate-400 mt-1">Recommended 800x600px</span>
               </div>
             )}
-            {errors.thumbnail && <p className="text-xs text-rose-500">{errors.thumbnail.message}</p>}
+            {errors.thumbnail && !pendingThumbnail && (
+              <p className="text-xs text-rose-500">{errors.thumbnail.message}</p>
+            )}
           </div>
 
           {/* Links & Config */}
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-4">
             <h2 className="text-base font-bold text-slate-700">Project Parameters</h2>
 
-            {/* Featured toggle */}
             <div className="flex items-center gap-3 py-2 border-y border-slate-50">
               <input
                 type="checkbox"
@@ -356,7 +391,6 @@ export default function AddProjectPage() {
               </label>
             </div>
 
-            {/* Order */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Display Order</label>
               <input
@@ -366,7 +400,6 @@ export default function AddProjectPage() {
               />
             </div>
 
-            {/* Live Link */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Live URL</label>
               <input
@@ -378,7 +411,6 @@ export default function AddProjectPage() {
               {errors.liveLink && <p className="text-xs text-rose-500">{errors.liveLink.message}</p>}
             </div>
 
-            {/* Github Link */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">GitHub URL</label>
               <input
@@ -393,7 +425,6 @@ export default function AddProjectPage() {
 
           {/* Tech Stack & Features Tags */}
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-4">
-            {/* Tech tag list */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Tech Stack Tags</label>
               <div className="flex gap-2">
@@ -401,19 +432,10 @@ export default function AddProjectPage() {
                   type="text"
                   placeholder="e.g. Next.js"
                   {...register("techStackInput")}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addTechTag();
-                    }
-                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTechTag(); } }}
                   className="flex-1 px-3 py-1.5 border border-slate-200 rounded-lg text-sm"
                 />
-                <button
-                  type="button"
-                  onClick={addTechTag}
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 rounded-lg font-bold text-xs"
-                >
+                <button type="button" onClick={addTechTag} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 rounded-lg font-bold text-xs">
                   Add
                 </button>
               </div>
@@ -421,15 +443,12 @@ export default function AddProjectPage() {
                 {techList.map((tech, idx) => (
                   <span key={tech} className="text-[10px] bg-[#001f3f]/5 text-[#001f3f] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                     {tech}
-                    <button type="button" onClick={() => removeTechTag(idx)} className="hover:text-rose-600">
-                      <X size={8} />
-                    </button>
+                    <button type="button" onClick={() => removeTechTag(idx)} className="hover:text-rose-600"><X size={8} /></button>
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Features */}
             <div className="space-y-2 pt-2 border-t border-slate-50">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Key Features</label>
               <div className="flex gap-2">
@@ -437,19 +456,10 @@ export default function AddProjectPage() {
                   type="text"
                   placeholder="e.g. JWT authentication"
                   {...register("featuresInput")}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addFeature();
-                    }
-                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addFeature(); } }}
                   className="flex-1 px-3 py-1.5 border border-slate-200 rounded-lg text-sm"
                 />
-                <button
-                  type="button"
-                  onClick={addFeature}
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 rounded-lg font-bold text-xs"
-                >
+                <button type="button" onClick={addFeature} className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 rounded-lg font-bold text-xs">
                   Add
                 </button>
               </div>
@@ -457,26 +467,24 @@ export default function AddProjectPage() {
                 {featureList.map((feat, idx) => (
                   <div key={feat} className="text-[11px] bg-slate-50 text-slate-600 font-semibold p-1.5 rounded-lg border border-slate-100 flex items-center justify-between">
                     <span className="truncate">{feat}</span>
-                    <button type="button" onClick={() => removeFeature(idx)} className="text-slate-400 hover:text-rose-600">
-                      <X size={10} />
-                    </button>
+                    <button type="button" onClick={() => removeFeature(idx)} className="text-slate-400 hover:text-rose-600"><X size={10} /></button>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Form Actions */}
+          {/* Submit */}
           <div className="pt-2">
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full flex items-center justify-center gap-2 bg-[#001f3f] text-white py-3 rounded-xl font-bold hover:bg-[#003366] transition-colors shadow"
             >
-              {isSubmitting ? (
+              {isSaving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Creating Project...</span>
+                  <span>Uploading & Saving...</span>
                 </>
               ) : (
                 <span>Publish Project</span>
