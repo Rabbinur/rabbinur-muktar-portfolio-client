@@ -11,7 +11,6 @@ import Projects from "@/components/sections/projects";
 import Services from "@/components/sections/service";
 import TechStackSection from "@/components/sections/tech-stack";
 import { useState } from "react";
-
 const API_URL = "/api";
 
 export default function Home() {

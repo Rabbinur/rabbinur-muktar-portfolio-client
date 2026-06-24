@@ -1,8 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { X, ExternalLink, Code, Tag, Info, CheckCircle2 } from "lucide-react";
-import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle2, Code, ExternalLink, Info, Tag, X } from "lucide-react";
 
 type Project = {
   id: string;
