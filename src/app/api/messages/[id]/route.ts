@@ -4,6 +4,37 @@ import MessageModel from "@/models/Message";
 
 export const runtime = "nodejs";
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await mongodbConnection();
+    const { id } = await params;
+
+    const message = await MessageModel.findById(id);
+
+    if (!message) {
+      return NextResponse.json(
+        { success: false, message: "Message not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      statusCode: 200,
+      message: "Message retrieved successfully",
+      data: message,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, message: error.message || "Failed to retrieve message" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

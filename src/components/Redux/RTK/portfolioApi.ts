@@ -75,8 +75,15 @@ export const portfolioApi = nodeApi.injectEndpoints({
 
     // Messages Endpoints
     getMessages: builder.query({
-      query: (searchQuery = "") => ({
-        url: `/messages?search_query=${searchQuery}`,
+      query: ({ search = "", page = 1, limit = 10 } = {}) => ({
+        url: `/messages?search_query=${search}&page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+      providesTags: ["messages"],
+    }),
+    getMessageById: builder.query({
+      query: (id: string) => ({
+        url: `/messages/${id}`,
         method: "GET",
       }),
       providesTags: ["messages"],
@@ -144,6 +151,7 @@ export const {
   useUpdateExperienceMutation,
   useDeleteExperienceMutation,
   useGetMessagesQuery,
+  useGetMessageByIdQuery,
   useUpdateMessageStatusMutation,
   useDeleteMessageMutation,
   useGetSettingsQuery,
