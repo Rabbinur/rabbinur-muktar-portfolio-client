@@ -1,10 +1,10 @@
 "use client";
 
+import { useSendContactMessageMutation } from "@/components/Redux/RTK/portfolioApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -17,8 +17,8 @@ const contactFormSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
-export default function Contact({ settings, apiUrl }: { settings: any; apiUrl: string }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function Contact({ settings }: { settings: any; apiUrl?: string }) {
+  const [sendContactMessage, { isLoading: isSubmitting }] = useSendContactMessageMutation();
 
   const {
     register,
@@ -35,32 +35,16 @@ export default function Contact({ settings, apiUrl }: { settings: any; apiUrl: s
   });
 
   const onSubmit = async (values: ContactFormValues) => {
-    setIsSubmitting(true);
     try {
       const payload = {
         ...values,
         subject: `Inquiry from ${values.name} via Portfolio`,
       };
-
-      const res = await fetch(`${apiUrl}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        toast.success(data.message || "Message submitted successfully!");
-        reset();
-      } else {
-        toast.error(data.message || "Failed to submit message");
-      }
-    } catch (err) {
-      toast.error( "Network error. Please try again later.");
-    } finally {
-      setIsSubmitting(false);
+      const res = await sendContactMessage(payload).unwrap();
+      toast.success(res.message || "Message submitted successfully!");
+      reset();
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Network error. Please try again later.");
     }
   };
 

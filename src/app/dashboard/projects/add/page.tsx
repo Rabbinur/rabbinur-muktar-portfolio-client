@@ -36,6 +36,8 @@ export default function AddProjectPage() {
   const [uploadSingle] = useUploadSingleImageMutation();
   const [uploadMultiple] = useUploadMultipleImagesMutation();
 
+  const [isLocalSaving, setIsLocalSaving] = useState(false);
+
   const [techList, setTechList] = useState<string[]>([]);
   const [featureList, setFeatureList] = useState<string[]>([]);
 
@@ -169,6 +171,7 @@ export default function AddProjectPage() {
       return;
     }
 
+    setIsLocalSaving(true);
     try {
       let thumbnailUrl = "";
       let screenshotUrls: string[] = [];
@@ -210,10 +213,12 @@ export default function AddProjectPage() {
       router.push("/dashboard/projects");
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Failed to create project");
+    } finally {
+      setIsLocalSaving(false);
     }
   };
 
-  const isSaving = isSubmitting;
+  const isSaving = isLocalSaving || isSubmitting;
   const displayThumbnail = thumbnailPreview;
   const displayScreenshots = screenshotPreviews;
 

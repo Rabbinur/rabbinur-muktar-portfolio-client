@@ -38,6 +38,8 @@ export default function EditProjectPage() {
   const [uploadSingle] = useUploadSingleImageMutation();
   const [uploadMultiple] = useUploadMultipleImagesMutation();
 
+  const [isLocalSaving, setIsLocalSaving] = useState(false);
+
   const [techList, setTechList] = useState<string[]>([]);
   const [featureList, setFeatureList] = useState<string[]>([]);
 
@@ -199,6 +201,7 @@ export default function EditProjectPage() {
       return;
     }
 
+    setIsLocalSaving(true);
     try {
       let finalThumbnail = existingThumbnail;
       let finalScreenshots = [...existingScreenshots];
@@ -241,10 +244,13 @@ export default function EditProjectPage() {
       router.push("/dashboard/projects");
     } catch (err: any) {
       toast.error(err?.data?.message || err?.message || "Failed to update project");
+    } finally {
+      setIsLocalSaving(false);
     }
   };
 
   // Combined display values
+  const isSaving = isLocalSaving || isSubmitting;
   const displayThumbnail = thumbnailPreview || existingThumbnail;
   const allScreenshots = [
     ...existingScreenshots.map((url) => ({ url, isPending: false, index: existingScreenshots.indexOf(url) })),
@@ -525,10 +531,10 @@ export default function EditProjectPage() {
           <div className="pt-2">
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSaving}
               className="w-full flex items-center justify-center gap-2 bg-[#001f3f] text-white py-3 rounded-xl font-bold hover:bg-[#003366] transition-colors shadow"
             >
-              {isSubmitting ? (
+              {isSaving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Uploading & Saving...</span>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTrackResumeDownloadMutation } from "@/components/Redux/RTK/portfolioApi";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Image from "next/image";
@@ -14,15 +15,14 @@ interface HeroProps {
 
 export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps) {
   const personal = settings?.personalInfo || {};
+  const [trackResumeDownload] = useTrackResumeDownloadMutation();
 
   const handleDownload = async () => {
     try {
-      await fetch(`${apiUrl}/resume/download`, {
-        method: "POST",
-      });
+      await trackResumeDownload(undefined).unwrap();
       toast.success("Resume download started!");
-    } catch (error) {
-      console.error("Failed to log resume download", error);
+    } catch {
+      // silently fail — don't block the download
     }
   };
 

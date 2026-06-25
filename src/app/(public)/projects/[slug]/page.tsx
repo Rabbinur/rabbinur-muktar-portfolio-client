@@ -5,8 +5,6 @@ import Image from "next/image";
 import { ArrowLeft, ExternalLink, Github, Layers, Target, ShieldAlert, Award } from "lucide-react";
 import { notFound } from "next/navigation";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5005/api/v1";
-
 const fallbackProjects = [
   {
     title: "ShoppingCart.bd",
@@ -68,15 +66,23 @@ const fallbackProjects = [
 
 async function getProjectData(slug: string) {
   try {
-    const res = await fetch(`${API_URL}/projects/${slug}`, { next: { revalidate: 30 } });
+    // Use the local Next.js API route — works in all environments
+    const baseUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+    const res = await fetch(`${baseUrl}/api/projects/${slug}`, {
+      next: { revalidate: 60 },
+    });
+
     if (res.ok) {
       const data = await res.json();
       return data?.data || null;
     }
   } catch (err) {
-    console.error("Connection to backend server timed out. Using fallback project match.");
+    console.error("Failed to fetch project, using fallback:", err);
   }
-  // Try to find matching fallback project
+  // Fallback static data if DB is unreachable
   return fallbackProjects.find((p) => p.slug === slug) || null;
 }
 
