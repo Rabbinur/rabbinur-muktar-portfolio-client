@@ -1,14 +1,14 @@
 "use client";
-
-import { useCreateProjectMutation, useUploadSingleImageMutation, useUploadMultipleImagesMutation } from "@/components/Redux/RTK/portfolioApi";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import Image from "next/image";
+import { useCreateProjectMutation, useUploadMultipleImagesMutation, useUploadSingleImageMutation } from "@/components/Redux/RTK/portfolioApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
-import { ArrowLeft, Upload, Loader2, X } from "lucide-react";
+import { ArrowLeft, Loader2, Upload, X } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 const projectFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -324,7 +324,9 @@ export default function AddProjectPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                   {displayScreenshots.map((url, index) => (
                     <div key={index} className="relative h-20 rounded-lg border border-slate-100 overflow-hidden group">
-                      <img src={url} alt={`Screenshot ${index}`} className="w-full h-full object-cover" />
+                      <Image
+                        width={500}
+                        height={500} src={url} alt={`Screenshot ${index}`} className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => removeScreenshot(index)}
@@ -348,7 +350,9 @@ export default function AddProjectPage() {
 
             {displayThumbnail ? (
               <div className="relative h-40 rounded-xl border border-slate-200 overflow-hidden group bg-slate-50">
-                <img src={displayThumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
+                <Image
+                  width={500}
+                  height={500} src={displayThumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
                 <button
                   type="button"
                   onClick={removeThumbnail}

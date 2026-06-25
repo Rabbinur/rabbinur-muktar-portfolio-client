@@ -108,7 +108,7 @@ const LoginPage = () => {
                 <input
                   id="email"
                   type="email"
-                  defaultValue={"admin@gmail.com"}
+                  // defaultValue={"admin@gmail.com"}
                   placeholder="Enter your email"
                   {...register("email", { required: "Email is required" })}
                   required
@@ -125,7 +125,7 @@ const LoginPage = () => {
                 </label>
                 <input
                   id="password"
-                  defaultValue={"admin@gmail.com"}
+                  // defaultValue={"admin@gmail.com"}
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   {...register("password", {

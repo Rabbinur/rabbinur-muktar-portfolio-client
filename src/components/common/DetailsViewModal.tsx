@@ -60,7 +60,9 @@ export const DetailsViewModal: React.FC<DetailsViewModalProps> = ({
                             {logoUrl && (
                                 <div className="flex justify-center mb-6">
                                     <div className="w-24 h-24 rounded-2xl border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shadow-inner">
-                                        <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+                                        <Image
+                                            width={500}
+                                            height={500} src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
                             )}
