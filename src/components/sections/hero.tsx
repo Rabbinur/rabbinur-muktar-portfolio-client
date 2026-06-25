@@ -17,12 +17,34 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
   const personal = settings?.personalInfo || {};
   const [trackResumeDownload] = useTrackResumeDownloadMutation();
 
-  const handleDownload = async () => {
+  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     try {
       await trackResumeDownload(undefined).unwrap();
-      toast.success("Resume download started!");
     } catch {
       // silently fail — don't block the download
+    }
+
+    if (!personal.resumeUrl) return;
+
+    try {
+      const response = await fetch(personal.resumeUrl);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = "MD Rabbinur Muktar.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      window.URL.revokeObjectURL(blobUrl);
+      toast.success("Resume download started!");
+    } catch (error) {
+      // Fallback: if fetch is blocked by CORS, open in new tab
+      window.open(personal.resumeUrl, "_blank");
+      toast.success("Opening resume...");
     }
   };
 
