@@ -85,7 +85,7 @@ const LoginPage = () => {
             {/* Logo */}
             <div className="flex justify-center">
               <Image
-                src={`/logo.png`}
+                src={`/rabbinur-logo.png`}
                 alt="logo-dg"
                 height={80}
                 width={250}
@@ -153,8 +153,8 @@ const LoginPage = () => {
                 className={`w-full h-12 md:h-14 flex items-center justify-center text-white text-base md:text-lg font-semibold rounded-none shadow-md 
               transition transform duration-300 ease-in-out
               ${loading
-                    ? "bg-red-400 cursor-not-allowed"
-                    : "bg-red-600 hover:bg-red-700 active:bg-red-800 hover:scale-[1.01]"
+                    ? "bg-primary cursor-not-allowed"
+                    : "bg-secondary hover:bg-secondary active:bg-secondary scale-[1.01]"
                   }`}
               >
                 {loading ? (
@@ -187,7 +187,7 @@ const LoginPage = () => {
               </button>
             </form>
             {/* Register Link */}
-            <div className="text-center pt-2 border-t border-gray-200 mt-4">
+            <div className="text-center hidden pt-2 border-t border-gray-200 mt-4">
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
                 <Link href="/register" className="text-red-600 hover:underline font-medium">

@@ -92,7 +92,7 @@ export default function Experience({ experiences = [] }: { experiences: any[] })
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0f172a]">
             My Professional Journey
           </h2>
-          <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
+          <p className="text-sm text-slate-500 font-bold  tracking -widest">
             A combination of professional experience, technical expertise, and modern development tools used to build scalable, high-performance, and user-focused digital products.
           </p>
         </div>
