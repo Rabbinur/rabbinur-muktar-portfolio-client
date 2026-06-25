@@ -31,14 +31,14 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
       const response = await fetch(personal.resumeUrl);
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
-      
+
       const link = document.createElement("a");
       link.href = blobUrl;
       link.download = "MD Rabbinur Muktar.pdf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       window.URL.revokeObjectURL(blobUrl);
       toast.success("Resume download started!");
     } catch (error) {
@@ -64,10 +64,36 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
     { text: "Tailwind CSS", size: "text-sm font-bold", top: "82%", right: "10%", delay: 0.9, blur: "blur-0", opacity: "opacity-12" },
   ];
 
+  const EMAIL_SUBJECT = "Project Inquiry – Let's Work Together";
+  const EMAIL_BODY = `Hi Rabbinur,
+
+I came across your portfolio and I'm interested in discussing a potential project with you.
+
+[Please describe your project here]
+
+Looking forward to hearing from you!`;
+
+  const email = settings?.contactInfo?.email || "rabbinur345@gmail.com";
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+    email
+  )}&su=${encodeURIComponent(
+    EMAIL_SUBJECT
+  )}&body=${encodeURIComponent(
+    EMAIL_BODY
+  )}`;
   const stats = [
-    { label: "Completed Projects", value: `${projectCount}+` },
-    { label: "Client satisfaction", value: "99%" },
-    { label: "Years experience", value: "3+" },
+    {
+      label: settings?.stat1Label || "Completed Projects",
+      value: settings?.stat1Value || `${projectCount}+`
+    },
+    {
+      label: settings?.stat2Label || "Client satisfaction",
+      value: settings?.stat2Value || "99%"
+    },
+    {
+      label: settings?.stat3Label || "Years experience",
+      value: settings?.stat3Value || "3+"
+    },
   ];
 
   // Animation variants
@@ -215,14 +241,12 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clipRule="evenodd" /></svg>
                   </a>
                 )}
-                {settings?.socialLinks?.twitter && (
-                  <a href={settings.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="hover:text-[#FF7849] transition-colors">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+
+                {email && (
+                  <a onClick={() => window.open(gmailUrl, "_blank")} className="cursor-pointer hover:text-[#FF7849] transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                   </a>
                 )}
-                <a href="#contact" className="hover:text-[#FF7849] transition-colors">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                </a>
               </motion.div>
             </div>
 
@@ -284,7 +308,7 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
               }}
             />
 
-            
+
             {/* Snippets Layer */}
             <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
               {bgSnippets.map((s, idx) => (

@@ -58,6 +58,12 @@ const settingsSchema = new Schema(
     contactInfo: { type: contactInfoSchema, default: {} },
     heroTitle: { type: String, default: "Building high-performance full-stack web applications" },
     heroSubtitle: { type: String, default: "Experienced developer specializing in Next.js, Node.js, and clean software architecture." },
+    stat1Label: { type: String, default: "Completed Projects" },
+    stat1Value: { type: String, default: "" },
+    stat2Label: { type: String, default: "Client satisfaction" },
+    stat2Value: { type: String, default: "99%" },
+    stat3Label: { type: String, default: "Years experience" },
+    stat3Value: { type: String, default: "3+" },
     resumeDownloadCount: { type: Number, default: 0 },
   },
   {
@@ -69,5 +75,10 @@ const settingsSchema = new Schema(
   }
 );
 
+if (process.env.NODE_ENV === "development" && mongoose.models && mongoose.models.Settings) {
+  delete mongoose.models.Settings;
+}
+
 export const SettingsModel = mongoose.models.Settings || mongoose.model("Settings", settingsSchema);
 export default SettingsModel;
+
