@@ -9,6 +9,9 @@ export async function GET(req: NextRequest) {
     await mongodbConnection();
     const { searchParams } = new URL(req.url);
     const search_query = searchParams.get("search_query") || "";
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
+    const limit = Math.max(1, parseInt(searchParams.get("limit") || "10", 10));
+    const skip = (page - 1) * limit;
 
     let condition = {};
     if (search_query) {
@@ -22,7 +25,12 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    const messages = await MessageModel.find(condition).sort({ createdAt: -1 });
+    const [messages, total] = await Promise.all([
+      MessageModel.find(condition).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      MessageModel.countDocuments(condition),
+    ]);
+
+    const totalPage = Math.ceil(total / limit);
 
     return NextResponse.json({
       success: true,
@@ -30,6 +38,12 @@ export async function GET(req: NextRequest) {
       message: "Messages retrieved successfully",
       data: {
         data: messages,
+        meta: {
+          total,
+          totalPage,
+          page,
+          limit,
+        },
       },
     });
   } catch (error: any) {

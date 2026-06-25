@@ -126,11 +126,11 @@ export default function ExperiencePage() {
       };
 
       if (editingId) {
-        await updateExperience({ id: editingId, data: payload }).unwrap();
-        toast.success("Experience updated successfully");
+        const res = await updateExperience({ id: editingId, data: payload }).unwrap();
+        toast.success(res.message || "Experience updated successfully");
       } else {
-        await createExperience(payload).unwrap();
-        toast.success("Experience created successfully");
+        const res = await createExperience(payload).unwrap();
+        toast.success(res.message || "Experience created successfully");
       }
       setIsModalOpen(false);
     } catch (err: any) {
@@ -350,7 +350,7 @@ export default function ExperiencePage() {
                     Add
                   </button>
                 </div>
-                
+
                 {/* List of bullets */}
                 <div className="space-y-1.5 max-h-36 overflow-y-auto pt-1">
                   {bullets.map((bullet, index) => (
