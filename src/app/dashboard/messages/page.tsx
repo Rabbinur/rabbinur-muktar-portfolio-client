@@ -1,21 +1,23 @@
 "use client";
 
-import { useGetMessagesQuery, useUpdateMessageStatusMutation, useDeleteMessageMutation } from "@/components/Redux/RTK/portfolioApi";
-import { Mail, Trash2, CheckCircle2, Eye, X, Calendar, User, Info, Reply } from "lucide-react";
-import { useState } from "react";
+import { useDeleteMessageMutation, useGetMessagesQuery, useUpdateMessageStatusMutation } from "@/components/Redux/RTK/portfolioApi";
 import { format } from "date-fns";
+import { Calendar, Info, Mail, Reply, Trash2, User, X } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { useMessageActions } from "./hooks/useMessageActions";
 
 export default function MessagesPage() {
   const [search, setSearch] = useState("");
   const { data: messagesData, isLoading } = useGetMessagesQuery(search);
   const [updateStatus] = useUpdateMessageStatusMutation();
   const [deleteMessage] = useDeleteMessageMutation();
-
+  const { sendReply } = useMessageActions(updateStatus);
   const [activeMessage, setActiveMessage] = useState<any | null>(null);
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [replyBody, setReplyBody] = useState("");
   const [replySubject, setReplySubject] = useState("");
+
 
   const handleOpenReplyModal = () => {
     if (!activeMessage) return;
@@ -119,9 +121,8 @@ export default function MessagesPage() {
                       <tr
                         key={msg.id || msg._id}
                         onClick={() => handleOpenMessage(msg)}
-                        className={`hover:bg-slate-50/50 cursor-pointer transition-colors ${
-                          isNew ? "font-bold bg-[#001f3f]/5" : ""
-                        }`}
+                        className={`hover:bg-slate-50/50 cursor-pointer transition-colors ${isNew ? "font-bold bg-[#001f3f]/5" : ""
+                          }`}
                       >
                         <td className="p-4 pl-6">
                           <p className="text-slate-700 font-bold truncate max-w-[140px]">{msg.name}</p>
@@ -287,29 +288,15 @@ export default function MessagesPage() {
                 Cancel
               </button>
               <button
-                onClick={async () => {
-                  if (!replyBody.trim()) {
-                    toast.error("Please enter a reply message");
-                    return;
-                  }
-                  
-                  // Construct mailto link
-                  const mailtoUrl = `mailto:${activeMessage.email}?subject=${encodeURIComponent(replySubject)}&body=${encodeURIComponent(replyBody)}`;
-                  
-                  // Open native mail client
-                  window.open(mailtoUrl, "_blank");
-
-                  // Mark as replied in database
-                  try {
-                    await updateStatus({ id: activeMessage.id || activeMessage._id, status: "replied" }).unwrap();
-                    toast.success("Mail client opened and status marked as replied");
-                    setActiveMessage({ ...activeMessage, status: "replied" });
-                  } catch (err) {
-                    console.error("Failed to update message status:", err);
-                  }
-
-                  setIsReplyOpen(false);
-                }}
+                onClick={() =>
+                  sendReply(
+                    activeMessage,
+                    replySubject,
+                    replyBody,
+                    setActiveMessage,
+                    setIsReplyOpen
+                  )
+                }
                 className="px-5 py-2 bg-[#001f3f] hover:bg-[#003366] text-white rounded-xl text-xs font-bold transition shadow"
               >
                 Open Mail Client

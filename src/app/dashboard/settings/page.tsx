@@ -2,7 +2,8 @@
 
 import { useGetSettingsQuery, useUpdateSettingsMutation, useUploadSingleImageMutation } from "@/components/Redux/RTK/portfolioApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Facebook, Github, Globe, Link2, Linkedin, Loader2, Twitter, Upload, User, X } from "lucide-react";
+import { Facebook, Github, Globe, Instagram, Link2, Linkedin, Loader2, Mail, Phone, Twitter, Upload, User, X } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -22,6 +23,12 @@ const settingsFormSchema = z.object({
     linkedin: z.string().url("Must be a valid URL").or(z.literal("")),
     twitter: z.string().url("Must be a valid URL").or(z.literal("")),
     facebook: z.string().url("Must be a valid URL").or(z.literal("")),
+  }),
+  contactInfo: z.object({
+    email: z.string().email("Must be a valid email").or(z.literal("")),
+    phone: z.string().optional(),
+    whatsapp: z.string().optional(),
+    instagram: z.string().url("Must be a valid URL").or(z.literal("")),
   }),
   seoSettings: z.object({
     title: z.string().min(1, "SEO Title is required"),
@@ -44,7 +51,7 @@ export default function SettingsPage() {
   const [updateSettings, { isLoading: isSaving }] = useUpdateSettingsMutation();
   const [uploadSingle, { isLoading: isUploading }] = useUploadSingleImageMutation();
 
-  const [activeTab, setActiveTab] = useState<"personal" | "social" | "seo">("personal");
+  const [activeTab, setActiveTab] = useState<"personal" | "social" | "contact" | "seo">("personal");
   const [keywordList, setKeywordList] = useState<string[]>([]);
 
   const {
@@ -60,6 +67,7 @@ export default function SettingsPage() {
     defaultValues: {
       personalInfo: { name: "", role: "", location: "", bio: "", profileImage: "", resumeUrl: "" },
       socialLinks: { github: "", linkedin: "", twitter: "", facebook: "" },
+      contactInfo: { email: "", phone: "", whatsapp: "", instagram: "" },
       seoSettings: { title: "", description: "", keywords: [] },
       websiteSettings: { availabilityStatus: "Available for projects", theme: "dark" },
       heroTitle: "",
@@ -84,6 +92,12 @@ export default function SettingsPage() {
           linkedin: data.socialLinks?.linkedin || "",
           twitter: data.socialLinks?.twitter || "",
           facebook: data.socialLinks?.facebook || "",
+        },
+        contactInfo: {
+          email: data.contactInfo?.email || "",
+          phone: data.contactInfo?.phone || "",
+          whatsapp: data.contactInfo?.whatsapp || "",
+          instagram: data.contactInfo?.instagram || "",
         },
         seoSettings: {
           title: data.seoSettings?.title || "",
@@ -190,38 +204,48 @@ export default function SettingsPage() {
         <p className="text-sm text-slate-400">Configure personal information, resume links, and SEO tags.</p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
-        {/* Settings Navigation Tabs */}
-        <div className="w-full lg:w-64 bg-white p-3 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex lg:flex-col gap-2 shrink-0">
+      <div className="space-y-6">
+        {/* Settings Navigation Tabs — Horizontal top bar */}
+        <div className="bg-white p-2 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab("personal")}
-            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === "personal"
+            className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "personal"
                 ? "bg-[#001f3f] text-white shadow-md shadow-[#001f3f]/10"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
               }`}
           >
-            <User size={16} />
-            <span className="hidden sm:inline">Profile & Hero</span>
+            <User size={15} />
+            Profile & Hero
           </button>
           <button
             onClick={() => setActiveTab("social")}
-            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === "social"
+            className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "social"
                 ? "bg-[#001f3f] text-white shadow-md shadow-[#001f3f]/10"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
               }`}
           >
-            <Link2 size={16} />
-            <span className="hidden sm:inline">Resume & Socials</span>
+            <Link2 size={15} />
+            Resume & Socials
+          </button>
+          <button
+            onClick={() => setActiveTab("contact")}
+            className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "contact"
+                ? "bg-[#001f3f] text-white shadow-md shadow-[#001f3f]/10"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+              }`}
+          >
+            <Phone size={15} />
+            Contact Info
           </button>
           <button
             onClick={() => setActiveTab("seo")}
-            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === "seo"
+            className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "seo"
                 ? "bg-[#001f3f] text-white shadow-md shadow-[#001f3f]/10"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
               }`}
           >
-            <Globe size={16} />
-            <span className="hidden sm:inline">SEO Config</span>
+            <Globe size={15} />
+            SEO Config
           </button>
         </div>
 
@@ -449,7 +473,75 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {/* TAB 3: SEO Configuration */}
+          {/* TAB 3: Contact Info */}
+          {activeTab === "contact" && (
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-6">
+              <h2 className="text-base font-black text-slate-800 pb-2 border-b border-slate-50">Contact Information</h2>
+              <p className="text-xs text-slate-400">These values power the &quot;Get in Touch&quot; section and footer on the public site.</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Email */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <Mail size={14} />
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="rabbinur345@gmail.com"
+                    {...register("contactInfo.email")}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm"
+                  />
+                  {errors.contactInfo?.email && <p className="text-xs text-rose-500">{errors.contactInfo.email.message}</p>}
+                </div>
+
+                {/* Phone */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <Phone size={14} />
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="+8801685111860"
+                    {...register("contactInfo.phone")}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm"
+                  />
+                </div>
+
+                {/* WhatsApp */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <Phone size={14} className="text-green-500" />
+                    WhatsApp Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="+8801685111860"
+                    {...register("contactInfo.whatsapp")}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm"
+                  />
+                </div>
+
+                {/* Instagram */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <Instagram size={14} />
+                    Instagram URL
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="https://instagram.com/rabbinur_muktar"
+                    {...register("contactInfo.instagram")}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm"
+                  />
+                  {errors.contactInfo?.instagram && <p className="text-xs text-rose-500">{errors.contactInfo.instagram.message}</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: SEO Configuration */}
           {activeTab === "seo" && (
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] space-y-6">
               <h2 className="text-base font-black text-slate-800 pb-2 border-b border-slate-50">Search Engine Optimization (SEO) Settings</h2>

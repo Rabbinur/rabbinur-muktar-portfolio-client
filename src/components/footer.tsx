@@ -1,97 +1,179 @@
 "use client";
 
-import { Github, Linkedin, Twitter, Facebook } from "lucide-react";
+import { Github, Instagram, Linkedin, Mail, MessageCircle, Phone, Twitter, Facebook, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useGetSettingsQuery } from "@/components/Redux/RTK/portfolioApi";
+
+const QUICK_LINKS = [
+  { label: "About", href: "#about" },
+  { label: "Skills", href: "#skills" },
+  { label: "Projects", href: "#projects" },
+  { label: "Experience", href: "#experience" },
+  { label: "Contact", href: "#contact" },
+];
+
+const EMAIL_SUBJECT = "Project Inquiry – Let's Work Together";
+const EMAIL_BODY = `Hi Rabbinur,
+
+I came across your portfolio and I'm interested in discussing a potential project with you.
+
+[Please describe your project here]
+
+Looking forward to hearing from you!`;
 
 export default function Footer() {
   const { data: settingsRes } = useGetSettingsQuery(undefined);
   const settings = settingsRes?.data || {};
   const socials = settings?.socialLinks || {};
   const personal = settings?.personalInfo || {};
+  const contact = settings?.contactInfo || {};
+
+  const email = contact.email || "rabbinur345@gmail.com";
+  const phone = contact.phone || "+8801685111860";
+  const location = personal.location || "Bangladesh";
+  const whatsapp = contact.whatsapp || "+8801685111860";
+  const instagram = contact.instagram || "https://www.instagram.com/rabbinur_muktar/";
+
+  const whatsappNumber = whatsapp.replace(/[^0-9]/g, "");
+  const emailHref = `mailto:${email}?subject=${encodeURIComponent(EMAIL_SUBJECT)}&body=${encodeURIComponent(EMAIL_BODY)}`;
+
+  const socialIcons = [
+    { href: socials.github || "https://github.com/rabbinur", icon: Github, label: "GitHub" },
+    { href: socials.linkedin || "https://www.linkedin.com/in/md-rabbinur-muktar-89a364232/", icon: Linkedin, label: "LinkedIn" },
+    { href: socials.twitter || "https://twitter.com/rabbinurmuktar", icon: Twitter, label: "Twitter" },
+    { href: socials.facebook || "#", icon: Facebook, label: "Facebook" },
+    { href: instagram, icon: Instagram, label: "Instagram" },
+    { href: emailHref, icon: Mail, label: "Email", self: true },
+  ];
 
   return (
-    <footer className="border-t border-border/40 bg-slate-50 dark:bg-slate-50 py-16 relative overflow-hidden">
-      {/* Subtle bottom glow effect */}
+    <footer className="border-t border-border/40 bg-slate-50 dark:bg-slate-50 py-14 relative overflow-hidden">
+      {/* Subtle glow */}
       <div className="absolute bottom-0 right-1/4 w-[350px] h-[350px] bg-secondary/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* Upper Row: Name Brand & Social Buttons */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-10 border-b border-border/40">
-          
-          {/* Logo Name & Short Desc */}
-          <div className="text-center md:text-left space-y-2">
+
+        {/* Main 4-column grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-10 border-b border-border/40">
+
+          {/* Col 1: Brand */}
+          <div className="space-y-4">
             <Link href="#home" className="inline-block group">
               <span className="font-heading font-black text-xl tracking-tight text-foreground transition-colors group-hover:text-secondary">
                 {personal.name || "Rabbinur Muktar"}<span className="text-secondary">.</span>
               </span>
             </Link>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-sm">
-              {personal.role || "Full Stack Developer"} based in {personal.location || "Bangladesh"}. Crafting high-fidelity, premium web solutions.
+            <p className="text-xs text-slate-500 dark:text-slate-500 font-medium leading-relaxed max-w-[220px]">
+              {personal.role || "Full Stack Developer"} based in {location}. Building modern, beautiful, and highly scalable web applications with clean code and rich aesthetics.
+            </p>
+            {/* Social icons */}
+            <div className="flex items-center gap-2 flex-wrap pt-1">
+              {socialIcons.map(({ href, icon: Icon, label, self }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={self ? "_self" : "_blank"}
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="p-2.5 rounded-full border border-secondary/25 bg-secondary/5 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,107,74,0.2)] hover:scale-105"
+                >
+                  <Icon size={14} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Col 2: Quick Links */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-black uppercase tracking-widest text-foreground/80">Quick Links</h4>
+            <ul className="space-y-2.5">
+              {QUICK_LINKS.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-sm text-slate-500 hover:text-secondary transition-colors font-medium flex items-center gap-1.5 group"
+                  >
+                    <span className="w-0 group-hover:w-2 h-px bg-secondary transition-all duration-300 rounded" />
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Col 3: Direct Communication */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-black uppercase tracking-widest text-foreground/80">Direct Communication</h4>
+            <ul className="space-y-3">
+              <li>
+                <a
+                  href={`https://wa.me/${whatsappNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 text-sm text-slate-500 hover:text-secondary transition-colors font-medium group"
+                >
+                  <span className="w-7 h-7 rounded-lg bg-green-50 border border-green-100 flex items-center justify-center group-hover:bg-green-500 group-hover:border-green-500 transition-all">
+                    <MessageCircle size={13} className="text-green-500 group-hover:text-white transition-colors" />
+                  </span>
+                  {phone}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={emailHref}
+                  className="flex items-center gap-2.5 text-sm text-slate-500 hover:text-secondary transition-colors font-medium group"
+                >
+                  <span className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:bg-secondary group-hover:border-secondary transition-all">
+                    <Mail size={13} className="text-secondary group-hover:text-white transition-colors" />
+                  </span>
+                  {email}
+                </a>
+              </li>
+              <li>
+                <span className="flex items-center gap-2.5 text-sm text-slate-500 font-medium">
+                  <span className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                    <MapPin size={13} className="text-blue-400" />
+                  </span>
+                  {location}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Follow Me */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-black uppercase tracking-widest text-foreground/80">Follow Me</h4>
+            <div className="grid grid-cols-3 gap-2">
+              {socialIcons.map(({ href, icon: Icon, label, self }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={self ? "_self" : "_blank"}
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="p-3 rounded-xl border border-secondary/20 bg-secondary/5 text-secondary hover:bg-secondary hover:text-white hover:border-secondary transition-all duration-300 hover:scale-105 hover:shadow-[0_0_12px_rgba(255,107,74,0.2)] flex items-center justify-center"
+                >
+                  <Icon size={15} />
+                </a>
+              ))}
+            </div>
+            <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
+              Based in {location}. Available to work with clients worldwide.
             </p>
           </div>
 
-          {/* Social Icons (Coral Theme) */}
-          <div className="flex items-center gap-3">
-            {socials.github && (
-              <a
-                href={socials.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-full border border-secondary/25 bg-secondary/5 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,107,74,0.05)] hover:shadow-[0_0_15px_rgba(255,107,74,0.2)] hover:scale-105"
-                aria-label="GitHub"
-              >
-                <Github size={16} />
-              </a>
-            )}
-            {socials.linkedin && (
-              <a
-                href={socials.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-full border border-secondary/25 bg-secondary/5 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,107,74,0.05)] hover:shadow-[0_0_15px_rgba(255,107,74,0.2)] hover:scale-105"
-                aria-label="LinkedIn"
-              >
-                <Linkedin size={16} />
-              </a>
-            )}
-            {socials.twitter && (
-              <a
-                href={socials.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-full border border-secondary/25 bg-secondary/5 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,107,74,0.05)] hover:shadow-[0_0_15px_rgba(255,107,74,0.2)] hover:scale-105"
-                aria-label="Twitter"
-              >
-                <Twitter size={16} />
-              </a>
-            )}
-            {socials.facebook && (
-              <a
-                href={socials.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-full border border-secondary/25 bg-secondary/5 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 shadow-[0_0_10px_rgba(255,107,74,0.05)] hover:shadow-[0_0_15px_rgba(255,107,74,0.2)] hover:scale-105"
-                aria-label="Facebook"
-              >
-                <Facebook size={16} />
-              </a>
-            )}
-          </div>
         </div>
 
-        {/* Lower Row: Copyright Statement & Navigation Links */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-10 text-xs font-semibold text-slate-500">
+        {/* Bottom bar */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 text-xs font-semibold text-slate-500">
           <p className="uppercase tracking-widest text-[10px] text-center md:text-left">
             © {new Date().getFullYear()} {personal.name || "Rabbinur Muktar"}. All rights reserved.
           </p>
-          
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5">
             <a href="#about" className="hover:text-secondary transition-colors">About</a>
-            <span className="text-slate-300 dark:text-slate-800">•</span>
+            <span className="text-slate-300">•</span>
             <a href="#projects" className="hover:text-secondary transition-colors">Projects</a>
-            <span className="text-slate-300 dark:text-slate-800">•</span>
+            <span className="text-slate-300">•</span>
             <a href="#contact" className="hover:text-secondary transition-colors">Contact</a>
           </div>
         </div>
