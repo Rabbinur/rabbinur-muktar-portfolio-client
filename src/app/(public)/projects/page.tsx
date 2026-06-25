@@ -7,16 +7,20 @@ import Image from "next/image";
 import { useState } from "react";
 
 type Project = {
-    id: string;
-    title: string;
-    description: string;
-    image: string;
-    techStack: string[];
-    type: string;
-    status: string;
-    liveLink: string;
-    githubLink: string;
-    detailsLink: string;
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  screenshots: string[];
+  techStack: string[];
+  features: string[];
+  challenges: string;
+  results: string;
+  type: string;
+  status: string;
+  liveLink: string;
+  githubLink: string;
+  detailsLink: string;
 };
 
 export default function ProjectsPage() {
@@ -38,18 +42,23 @@ export default function ProjectsPage() {
         );
     }
 
-    const projects: Project[] = projectsData.map((p: any) => ({
-        id: p._id || p.id,
-        title: p.title,
-        description: p.description,
-        image: p.thumbnail || "/project1.png",
-        techStack: p.techStack || [],
-        type: p.type || "WEB APP",
-        status: p.status || "Completed",
-        liveLink: p.liveLink || "",
-        githubLink: p.githubLink || "",
-        detailsLink: p.detailsLink || "",
-    }));
+    const projects: Project[] =
+        projectsRes?.data?.data?.map((p: any) => ({
+            id: p._id || p.id,
+            title: p.title,
+            description: p.description,
+            image: p.thumbnail,
+            screenshots: p.screenshots || [],
+            techStack: p.techStack || [],
+            features: p.features || [],
+            challenges: p.challenges || "",
+            results: p.results || "",
+            type: p.type || "WEB APP",
+            status: p.status || "Completed",
+            liveLink: p.liveLink || "",
+            githubLink: p.githubLink || "",
+            detailsLink: p.detailsLink || "",
+        })) || [];
 
     const handleCardClick = (project: Project) => {
         setSelectedProject(project);

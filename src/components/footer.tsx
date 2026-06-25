@@ -1,8 +1,8 @@
 "use client";
 
-import { Github, Instagram, Linkedin, Mail, MessageCircle, Phone, Twitter, Facebook, MapPin } from "lucide-react";
-import Link from "next/link";
 import { useGetSettingsQuery } from "@/components/Redux/RTK/portfolioApi";
+import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, MessageCircle } from "lucide-react";
+import Link from "next/link";
 
 const QUICK_LINKS = [
   { label: "About", href: "#about" },
@@ -35,15 +35,20 @@ export default function Footer() {
   const instagram = contact.instagram || "https://www.instagram.com/rabbinur_muktar/";
 
   const whatsappNumber = whatsapp.replace(/[^0-9]/g, "");
-  const emailHref = `mailto:${email}?subject=${encodeURIComponent(EMAIL_SUBJECT)}&body=${encodeURIComponent(EMAIL_BODY)}`;
-
+  const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+    email
+  )}&su=${encodeURIComponent(
+    EMAIL_SUBJECT
+  )}&body=${encodeURIComponent(
+    EMAIL_BODY
+  )}`;
   const socialIcons = [
     { href: socials.github || "https://github.com/rabbinur", icon: Github, label: "GitHub" },
     { href: socials.linkedin || "https://www.linkedin.com/in/md-rabbinur-muktar-89a364232/", icon: Linkedin, label: "LinkedIn" },
-    { href: socials.twitter || "https://twitter.com/rabbinurmuktar", icon: Twitter, label: "Twitter" },
+
     { href: socials.facebook || "#", icon: Facebook, label: "Facebook" },
     { href: instagram, icon: Instagram, label: "Instagram" },
-    { href: emailHref, icon: Mail, label: "Email", self: true },
+    { href: gmailComposeUrl, icon: Mail, label: "Email", self: true },
   ];
 
   return (
@@ -120,7 +125,9 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href={emailHref}
+                  href={gmailComposeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-2.5 text-sm text-slate-500 hover:text-secondary transition-colors font-medium group"
                 >
                   <span className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center group-hover:bg-secondary group-hover:border-secondary transition-all">

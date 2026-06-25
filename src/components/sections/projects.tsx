@@ -18,7 +18,11 @@ type Project = {
   title: string;
   description: string;
   image: string;
+  screenshots: string[];
   techStack: string[];
+  features: string[];
+  challenges: string;
+  results: string;
   type: string;
   status: string;
   liveLink: string;
@@ -40,7 +44,11 @@ export default function ProjectsSection() {
       title: p.title,
       description: p.description,
       image: p.thumbnail,
+      screenshots: p.screenshots || [],
       techStack: p.techStack || [],
+      features: p.features || [],
+      challenges: p.challenges || "",
+      results: p.results || "",
       type: p.type || "WEB APP",
       status: p.status || "Completed",
       liveLink: p.liveLink || "",
@@ -208,7 +216,7 @@ export default function ProjectsSection() {
                     </div>
 
                     <div className="">
-                    
+
 
                       <div className="flex flex-wrap gap-2  my-3">
                         {project.techStack?.slice(0, 6).map((tech) => (
