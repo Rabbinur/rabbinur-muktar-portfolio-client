@@ -5,10 +5,14 @@ import { Menu, Moon, Sun, X, Home, User, Code, Briefcase, Layers, Mail } from "l
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 
 export default function Navbar() {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const pathname = usePathname();
+  const router = useRouter();
+  const isHomePage = pathname === "/";
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -114,7 +118,15 @@ export default function Navbar() {
       >
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            <Link href="#home" onClick={(e) => handleSmoothScroll(e, "#home")} className="flex items-center gap-2 group relative z-[60]">
+            <Link
+              href={isHomePage ? "#home" : "/"}
+              onClick={(e) => {
+                if (isHomePage) {
+                  handleSmoothScroll(e, "#home");
+                }
+              }}
+              className="flex items-center gap-2 group relative z-[60]"
+            >
               <Image
                 src="/rabbinur-logo.png"
                 alt="Rabbinur Muktar"
@@ -127,10 +139,14 @@ export default function Navbar() {
             {/* Desktop Nav with Scroll Spy Highlighting */}
             <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-xs font-black uppercase tracking-wider">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
-                  onClick={(e) => handleSmoothScroll(e, link.href)}
+                  href={isHomePage ? link.href : `/${link.href}`}
+                  onClick={(e) => {
+                    if (isHomePage) {
+                      handleSmoothScroll(e, link.href);
+                    }
+                  }}
                   className={`transition-colors relative py-2 ${
                     activeSection === link.id
                       ? "text-foreground font-black"
@@ -144,7 +160,7 @@ export default function Navbar() {
                       className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full"
                     />
                   )}
-                </a>
+                </Link>
               ))}
             </nav>
 
@@ -158,13 +174,17 @@ export default function Navbar() {
                   {resolvedTheme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
                 </button>
               )}
-              <a
-                href="#contact"
-                onClick={(e) => handleSmoothScroll(e, "#contact")}
+              <Link
+                href={isHomePage ? "#contact" : "/#contact"}
+                onClick={(e) => {
+                  if (isHomePage) {
+                    handleSmoothScroll(e, "#contact");
+                  }
+                }}
                 className="border border-secondary text-foreground text-xs font-black px-6 py-2.5 rounded-xl hover:bg-secondary hover:text-white transition-all shadow-[0_0_15px_rgba(255,107,74,0.1)]"
               >
                 Got a project?
-              </a>
+              </Link>
             </div>
 
             {/* Mobile Top Theme Switcher Only */}
@@ -195,8 +215,12 @@ export default function Navbar() {
                 <motion.a
                   ref={centerButtonRef}
                   key={tab.id}
-                  href={tab.href!}
-                  onClick={(e) => handleSmoothScroll(e, tab.href!)}
+                  href={isHomePage ? tab.href! : `/${tab.href!}`}
+                  onClick={(e) => {
+                    if (isHomePage) {
+                      handleSmoothScroll(e, tab.href!);
+                    }
+                  }}
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
                   style={{ x: magneticX, y: magneticY }}
@@ -218,7 +242,11 @@ export default function Navbar() {
                   if (tab.isMenuTrigger) {
                     setIsOpen(!isOpen);
                   } else if (tab.href) {
-                    handleSmoothScroll(e, tab.href);
+                    if (isHomePage) {
+                      handleSmoothScroll(e, tab.href);
+                    } else {
+                      router.push(`/${tab.href}`);
+                    }
                   }
                 }}
                 className="flex flex-col items-center justify-center flex-1 group"
@@ -269,7 +297,17 @@ export default function Navbar() {
             >
               <div className="space-y-6">
                 <div className="flex items-center justify-between h-14 border-b border-border/10 pb-2">
-                  <Link href="#home" onClick={(e) => handleSmoothScroll(e, "#home")} className="flex items-center">
+                  <Link
+                    href={isHomePage ? "#home" : "/"}
+                    onClick={(e) => {
+                      if (isHomePage) {
+                        handleSmoothScroll(e, "#home");
+                      } else {
+                        setIsOpen(false);
+                      }
+                    }}
+                    className="flex items-center"
+                  >
                     <Image
                       src="/rabbinur-logo.png"
                       alt="Rabbinur Muktar"
@@ -289,10 +327,16 @@ export default function Navbar() {
 
                 <nav className="flex flex-col gap-1 font-black uppercase tracking-wider text-xs">
                   {navLinks.map((link) => (
-                    <a
+                    <Link
                       key={link.label}
-                      href={link.href}
-                      onClick={(e) => handleSmoothScroll(e, link.href)}
+                      href={isHomePage ? link.href : `/${link.href}`}
+                      onClick={(e) => {
+                        if (isHomePage) {
+                          handleSmoothScroll(e, link.href);
+                        } else {
+                          setIsOpen(false);
+                        }
+                      }}
                       className={`py-3 px-4 rounded-xl transition-all flex items-center gap-3 ${
                         activeSection === link.id
                           ? "bg-secondary text-white shadow-sm"
@@ -301,18 +345,24 @@ export default function Navbar() {
                     >
                       <link.icon size={16} />
                       {link.label}
-                    </a>
+                    </Link>
                   ))}
                 </nav>
               </div>
 
-              <a
-                href="#contact"
-                onClick={(e) => handleSmoothScroll(e, "#contact")}
+              <Link
+                href={isHomePage ? "#contact" : "/#contact"}
+                onClick={(e) => {
+                  if (isHomePage) {
+                    handleSmoothScroll(e, "#contact");
+                  } else {
+                    setIsOpen(false);
+                  }
+                }}
                 className="w-full flex items-center justify-center gap-1 border border-secondary text-foreground py-3.5 rounded-xl font-black text-xs hover:bg-secondary hover:text-white transition-all shadow-[0_0_15px_rgba(255,107,74,0.1)]"
               >
                 Got a project?
-              </a>
+              </Link>
             </motion.div>
           </div>
         )}

@@ -12,9 +12,10 @@ import Services from "@/components/sections/service";
 import TechStackSection from "@/components/sections/tech-stack";
 import { useState } from "react";
 const API_URL = "/api";
+let hasLoadedOnce = false;
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!hasLoadedOnce);
 
   const { data: settingsRes, isLoading: settingsLoading } = useGetSettingsQuery(undefined);
   const { data: projectsRes, isLoading: projectsLoading } = useGetProjectsQuery(undefined);
@@ -26,10 +27,17 @@ export default function Home() {
   const projects = projectsRes?.data?.data || [];
   const experiences = experiencesRes?.data?.data || [];
 
+  const showLoader = !hasLoadedOnce && (isLoading || isDataLoading);
+
   return (
     <>
-      {(isLoading || isDataLoading) ? (
-        <UltimatePortfolioLoader onComplete={() => setIsLoading(false)} />
+      {showLoader ? (
+        <UltimatePortfolioLoader
+          onComplete={() => {
+            setIsLoading(false);
+            hasLoadedOnce = true;
+          }}
+        />
       ) : (
         <div className="flex flex-col min-h-screen">
           <main className="flex-grow">

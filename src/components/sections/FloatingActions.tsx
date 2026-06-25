@@ -12,9 +12,31 @@ export default function FloatingActions() {
 
     const [trackResumeDownload] = useTrackResumeDownloadMutation();
 
-    const handleDownloadClick = () => {
+    const handleDownloadClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
         // Track the download silently
         trackResumeDownload(undefined).catch(() => {});
+
+        if (!resumeUrl) return;
+
+        e.preventDefault();
+
+        try {
+            const response = await fetch(resumeUrl);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = "MD Rabbinur Muktar.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            // Fallback: if fetch is blocked by CORS, open in new tab
+            window.open(resumeUrl, "_blank");
+        }
     };
 
     return (
