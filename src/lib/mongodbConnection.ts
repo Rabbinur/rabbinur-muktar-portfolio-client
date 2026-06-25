@@ -3,10 +3,6 @@ import { seedAdmin } from "./seedAdmin";
 
 const MONGODB_URL = process.env.MONGODB_URL;
 
-if (!MONGODB_URL) {
-  throw new Error("Please define the MONGODB_URL environment variable inside .env.local");
-}
-
 let cached = (global as any).mongoose;
 
 if (!cached) {
@@ -14,6 +10,10 @@ if (!cached) {
 }
 
 async function mongodbConnection() {
+  if (!MONGODB_URL) {
+    throw new Error("Please define the MONGODB_URL environment variable inside .env.local");
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
