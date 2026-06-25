@@ -1,14 +1,14 @@
 "use client";
-
-import { useGetProjectBySlugQuery, useUpdateProjectMutation, useUploadSingleImageMutation, useUploadMultipleImagesMutation } from "@/components/Redux/RTK/portfolioApi";
-import { useRouter, useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import Image from "next/image";
+import { useGetProjectBySlugQuery, useUpdateProjectMutation, useUploadMultipleImagesMutation, useUploadSingleImageMutation } from "@/components/Redux/RTK/portfolioApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
-import { ArrowLeft, Upload, Loader2, X } from "lucide-react";
+import { ArrowLeft, Loader2, Upload, X } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 const projectFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -361,7 +361,9 @@ export default function EditProjectPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                   {allScreenshots.map(({ url, isPending, index }) => (
                     <div key={url} className="relative h-20 rounded-lg border border-slate-100 overflow-hidden group">
-                      <img src={url} alt="Screenshot" className="w-full h-full object-cover" />
+                      <Image
+                        width={500}
+                        height={500} src={url} alt="Screenshot" className="w-full h-full object-cover" />
                       {isPending && (
                         <span className="absolute bottom-1 left-1 text-[8px] bg-amber-500 text-white px-1 rounded font-bold">NEW</span>
                       )}
@@ -388,7 +390,9 @@ export default function EditProjectPage() {
 
             {displayThumbnail ? (
               <div className="relative h-40 rounded-xl border border-slate-200 overflow-hidden group bg-slate-50">
-                <img src={displayThumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
+                <Image
+                  width={500}
+                  height={500} src={displayThumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
                 {pendingThumbnail && (
                   <span className="absolute bottom-2 left-2 text-[8px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-bold">NEW</span>
                 )}

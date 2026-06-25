@@ -2,6 +2,7 @@
 
 import { Project } from "@/components/hooks/useProjects";
 import { motion, MotionValue, useTransform } from "framer-motion";
+import Image from "next/image";
 
 
 interface ProjectCardProps {
@@ -98,7 +99,9 @@ export function ProjectCard({
 
           {/* Image */}
           <div className="relative p-8">
-            <img
+            <Image
+              width={500}
+              height={500}
               src={project.image}
               alt={project.title}
               className="

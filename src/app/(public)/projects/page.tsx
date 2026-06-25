@@ -3,6 +3,7 @@
 import { useGetProjectsQuery } from "@/components/Redux/RTK/portfolioApi";
 import ProjectDetailsModal from "@/components/common/ProjectDetailsModal";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useState } from "react";
 
 type Project = {
@@ -120,7 +121,9 @@ export default function ProjectsPage() {
 
                                         {/* Thumbnail Image or Fallback Title */}
                                         {project.image ? (
-                                            <img
+                                            <Image
+                                                width={500}
+                                                height={500}
                                                 src={project.image}
                                                 alt={project.title}
                                                 className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-85 transition-all duration-500"

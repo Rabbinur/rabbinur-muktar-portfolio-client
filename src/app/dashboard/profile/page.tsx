@@ -114,7 +114,9 @@ const MyProfile: React.FC = () => {
     {
       label: "Profile Photo",
       value: (
-        <img
+        <Image
+          width={500}
+          height={500}
           src={profileImageSrc}
           alt="Profile"
           className="w-10 h-10 rounded-full object-cover border border-gray-300"

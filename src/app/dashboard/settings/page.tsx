@@ -1,12 +1,12 @@
 "use client";
 
 import { useGetSettingsQuery, useUpdateSettingsMutation, useUploadSingleImageMutation } from "@/components/Redux/RTK/portfolioApi";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Facebook, Github, Globe, Link2, Linkedin, Loader2, Twitter, Upload, User, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import { User, Settings, Globe, Shield, Link2, Upload, Loader2, X, Github, Linkedin, Twitter, Facebook } from "lucide-react";
+import * as z from "zod";
 
 const settingsFormSchema = z.object({
   personalInfo: z.object({
@@ -195,33 +195,30 @@ export default function SettingsPage() {
         <div className="w-full lg:w-64 bg-white p-3 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex lg:flex-col gap-2 shrink-0">
           <button
             onClick={() => setActiveTab("personal")}
-            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
-              activeTab === "personal"
+            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === "personal"
                 ? "bg-[#001f3f] text-white shadow-md shadow-[#001f3f]/10"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-            }`}
+              }`}
           >
             <User size={16} />
             <span className="hidden sm:inline">Profile & Hero</span>
           </button>
           <button
             onClick={() => setActiveTab("social")}
-            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
-              activeTab === "social"
+            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === "social"
                 ? "bg-[#001f3f] text-white shadow-md shadow-[#001f3f]/10"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-            }`}
+              }`}
           >
             <Link2 size={16} />
             <span className="hidden sm:inline">Resume & Socials</span>
           </button>
           <button
             onClick={() => setActiveTab("seo")}
-            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
-              activeTab === "seo"
+            className={`w-full flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === "seo"
                 ? "bg-[#001f3f] text-white shadow-md shadow-[#001f3f]/10"
                 : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-            }`}
+              }`}
           >
             <Globe size={16} />
             <span className="hidden sm:inline">SEO Config</span>
@@ -240,7 +237,9 @@ export default function SettingsPage() {
                 <div className="relative h-24 w-24 rounded-full border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0 group">
                   {profileImageVal ? (
                     <>
-                      <img src={profileImageVal} alt="Profile" className="w-full h-full object-cover" />
+                      <Image
+                        width={500}
+                        height={500} src={profileImageVal} alt="Profile" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => setValue("personalInfo.profileImage", "")}
