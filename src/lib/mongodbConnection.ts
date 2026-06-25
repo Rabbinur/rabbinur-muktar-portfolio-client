@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { seedAdmin } from "./seedAdmin";
+// import { seedAdmin } from "./seedAdmin";
 
 const MONGODB_URL = process.env.MONGODB_URL;
 
@@ -27,12 +27,12 @@ async function mongodbConnection() {
     cached.promise = mongoose.connect(MONGODB_URL!, opts).then(async (mongooseInstance) => {
       console.log("✅ MongoDB Connected Successfully!");
       
-      // Auto seed default admin from environment variables
-      try {
-        await seedAdmin();
-      } catch (seedErr: any) {
-        console.error("❌ Admin seeding failed:", seedErr.message);
-      }
+      // Admin seeding disabled — credentials already exist in the database
+      // try {
+      //   await seedAdmin();
+      // } catch (seedErr: any) {
+      //   console.error("❌ Admin seeding failed:", seedErr.message);
+      // }
       
       return mongooseInstance;
     });

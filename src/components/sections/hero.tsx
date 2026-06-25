@@ -73,7 +73,7 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
     <section
       id="home"
 
-      className="relative min-h-screen pt-14 flex flex-col justify-between bg-background  overflow-hidden"
+      className="relative lg:min-h-screen pt-16 flex flex-col justify-between bg-background  overflow-hidden"
     >
       <div className="absolute inset-0 ">
         {/* Left */}
@@ -262,9 +262,7 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
               }}
             />
 
-            {/* Decorative < bracket element */}
-            <span className="absolute left-0 lg:left-6 text-primary/20 text-5xl font-black font-sans leading-none animate-pulse z-20">{"<"}</span>
-
+            
             {/* Snippets Layer */}
             <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
               {bgSnippets.map((s, idx) => (
@@ -299,11 +297,13 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
 
             {/* Image Circle Frame with thick border, white background in light mode */}
             <motion.div
-              className="relative h-64 w-64 sm:h-80 sm:w-80 lg:h-[360px] lg:w-[360px]  flex items-center justify-center  z-20"
+              className="relative h-64 w-64 sm:h-80 sm:w-80 lg:h-[360px] lg:w-[360px]  flex items-center justify-center mx-auto z-20"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             >
+              <span className="absolute top-1/2 -left-12 -translate-y-1/2 text-primary/20 text-5xl font-black font-sans leading-none animate-pulse z-20">{"<"}</span>
+
               <div className="relative h-full w-full rounded-full overflow-hidden">
                 <Image
                   src="/rabbinur.jpeg"
@@ -313,10 +313,9 @@ export default function Hero({ settings, apiUrl, projectCount = 34 }: HeroProps)
                   className="rounded-full object-cover"
                 />
               </div>
+              {/* Decorative > bracket element */}
+              <span className="absolute top-1/2 -right-12 -translate-y-1/2 text-primary/20 text-5xl font-black font-sans leading-none animate-pulse z-20">{">"}</span>
             </motion.div>
-
-            {/* Decorative > bracket element */}
-            <span className="absolute right-0 lg:right-6 text-primary/20 text-5xl font-black font-sans leading-none animate-pulse z-20">{">"}</span>
           </div>
 
         </div>
