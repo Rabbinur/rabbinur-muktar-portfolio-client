@@ -8,14 +8,17 @@ export const portfolioApi = nodeApi.injectEndpoints({
         url: `/projects?search_query=${searchQuery}`,
         method: "GET",
       }),
-      providesTags: ["projects"],
+      providesTags: [{ type: "projects", id: "LIST" }],
     }),
     getProjectBySlug: builder.query({
       query: (slug: string) => ({
         url: `/projects/${slug}`,
         method: "GET",
       }),
-      providesTags: ["projects"],
+      providesTags: (_result, _error, slug) => [
+        { type: "projects", id: slug },
+        { type: "projects", id: "LIST" },
+      ],
     }),
     createProject: builder.mutation({
       query: (data) => ({
@@ -23,7 +26,7 @@ export const portfolioApi = nodeApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["projects"],
+      invalidatesTags: [{ type: "projects", id: "LIST" }],
     }),
     updateProject: builder.mutation({
       query: ({ id, data }) => ({
@@ -31,14 +34,20 @@ export const portfolioApi = nodeApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["projects"],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "projects", id },
+        { type: "projects", id: "LIST" },
+      ],
     }),
     deleteProject: builder.mutation({
       query: (id: string) => ({
         url: `/projects/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["projects"],
+      invalidatesTags: (_result, _error, id) => [
+        { type: "projects", id },
+        { type: "projects", id: "LIST" },
+      ],
     }),
 
     // Experience Endpoints
@@ -47,7 +56,16 @@ export const portfolioApi = nodeApi.injectEndpoints({
         url: "/experiences",
         method: "GET",
       }),
-      providesTags: ["experience"],
+      providesTags: (result) =>
+        result?.data?.data
+          ? [
+              ...result.data.data.map(({ _id }: any) => ({
+                type: "experience" as const,
+                id: _id,
+              })),
+              { type: "experience", id: "LIST" },
+            ]
+          : [{ type: "experience", id: "LIST" }],
     }),
     createExperience: builder.mutation({
       query: (data) => ({
@@ -55,7 +73,7 @@ export const portfolioApi = nodeApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["experience"],
+      invalidatesTags: [{ type: "experience", id: "LIST" }],
     }),
     updateExperience: builder.mutation({
       query: ({ id, data }) => ({
@@ -63,30 +81,56 @@ export const portfolioApi = nodeApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["experience"],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "experience", id },
+        { type: "experience", id: "LIST" },
+      ],
     }),
     deleteExperience: builder.mutation({
       query: (id: string) => ({
         url: `/experiences/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["experience"],
+      invalidatesTags: (_result, _error, id) => [
+        { type: "experience", id },
+        { type: "experience", id: "LIST" },
+      ],
     }),
 
     // Messages Endpoints
-    getMessages: builder.query({
-      query: ({ search = "", page = 1, limit = 10 } = {}) => ({
-        url: `/messages?search_query=${search}&page=${page}&limit=${limit}`,
-        method: "GET",
-      }),
-      providesTags: ["messages"],
+    getMessages: builder.query<any, { search?: string; page?: number; limit?: number } | void>({
+      query: (args) => {
+        const { search = "", page = 1, limit = 10 } = args || {};
+        return {
+          url: `/messages?search_query=${search}&page=${page}&limit=${limit}`,
+          method: "GET",
+        };
+      },
+      providesTags: (result) =>
+        result?.data?.data
+          ? [
+              ...result.data.data.map(({ _id }: any) => ({
+                type: "messages" as const,
+                id: _id,
+              })),
+              { type: "messages", id: "LIST" },
+            ]
+          : [{ type: "messages", id: "LIST" }],
     }),
     getMessageById: builder.query({
       query: (id: string) => ({
         url: `/messages/${id}`,
         method: "GET",
       }),
-      providesTags: ["messages"],
+      providesTags: (_result, _error, id) => [{ type: "messages", id }],
+    }),
+    sendContactMessage: builder.mutation({
+      query: (data) => ({
+        url: "/messages",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: [{ type: "messages", id: "LIST" }],
     }),
     updateMessageStatus: builder.mutation({
       query: ({ id, status }) => ({
@@ -94,14 +138,20 @@ export const portfolioApi = nodeApi.injectEndpoints({
         method: "PATCH",
         body: { status },
       }),
-      invalidatesTags: ["messages"],
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "messages", id },
+        { type: "messages", id: "LIST" },
+      ],
     }),
     deleteMessage: builder.mutation({
       query: (id: string) => ({
         url: `/messages/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["messages"],
+      invalidatesTags: (_result, _error, id) => [
+        { type: "messages", id },
+        { type: "messages", id: "LIST" },
+      ],
     }),
 
     // Settings Endpoints
@@ -117,6 +167,15 @@ export const portfolioApi = nodeApi.injectEndpoints({
         url: "/settings",
         method: "PATCH",
         body: data,
+      }),
+      invalidatesTags: ["settings"],
+    }),
+
+    // Resume Download Tracker
+    trackResumeDownload: builder.mutation({
+      query: () => ({
+        url: "/resume",
+        method: "POST",
       }),
       invalidatesTags: ["settings"],
     }),
@@ -152,10 +211,12 @@ export const {
   useDeleteExperienceMutation,
   useGetMessagesQuery,
   useGetMessageByIdQuery,
+  useSendContactMessageMutation,
   useUpdateMessageStatusMutation,
   useDeleteMessageMutation,
   useGetSettingsQuery,
   useUpdateSettingsMutation,
+  useTrackResumeDownloadMutation,
   useUploadSingleImageMutation,
   useUploadMultipleImagesMutation,
 } = portfolioApi;

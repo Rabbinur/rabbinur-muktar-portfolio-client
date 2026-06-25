@@ -16,6 +16,8 @@ export default function MessagesPage() {
     search,
     page,
     limit,
+  }, {
+    pollingInterval: 30000, // নতুন মেসেজ আসলে 30 সেকেন্ড পরপর auto-refresh
   });
 
   const messages = messagesData?.data?.data || [];

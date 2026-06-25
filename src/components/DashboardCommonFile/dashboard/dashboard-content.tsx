@@ -7,7 +7,7 @@ import { format } from "date-fns";
 
 export default function DashboardContent() {
   const { data: projectsData, isLoading: loadingProjects } = useGetProjectsQuery("");
-  const { data: messagesData, isLoading: loadingMessages } = useGetMessagesQuery("");
+  const { data: messagesData, isLoading: loadingMessages } = useGetMessagesQuery(undefined);
   const { data: settingsData, isLoading: loadingSettings } = useGetSettingsQuery(undefined);
 
   const totalProjects = projectsData?.data?.data?.length || 0;
