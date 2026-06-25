@@ -39,12 +39,23 @@ const websiteSettingsSchema = new Schema(
   { _id: false }
 );
 
+const contactInfoSchema = new Schema(
+  {
+    email: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    whatsapp: { type: String, default: "" },
+    instagram: { type: String, default: "" },
+  },
+  { _id: false }
+);
+
 const settingsSchema = new Schema(
   {
     personalInfo: { type: personalInfoSchema, default: {} },
     socialLinks: { type: socialLinksSchema, default: {} },
     seoSettings: { type: seoSettingsSchema, default: {} },
     websiteSettings: { type: websiteSettingsSchema, default: {} },
+    contactInfo: { type: contactInfoSchema, default: {} },
     heroTitle: { type: String, default: "Building high-performance full-stack web applications" },
     heroSubtitle: { type: String, default: "Experienced developer specializing in Next.js, Node.js, and clean software architecture." },
     resumeDownloadCount: { type: Number, default: 0 },

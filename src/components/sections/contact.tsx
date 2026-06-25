@@ -52,13 +52,13 @@ export default function Contact({ settings, apiUrl }: { settings: any; apiUrl: s
 
       const data = await res.json();
       if (data.success) {
-        toast.success("Message submitted successfully!");
+        toast.success(data.message || "Message submitted successfully!");
         reset();
       } else {
         toast.error(data.message || "Failed to submit message");
       }
     } catch (err) {
-      toast.error("Network error. Please try again later.");
+      toast.error( "Network error. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
