@@ -1,26 +1,26 @@
 "use client";
 
 import { useGetProjectsQuery } from "@/components/Redux/RTK/portfolioApi";
+import ProjectCard from "@/components/common/ProjectCard/ProjectCard";
 import ProjectDetailsModal from "@/components/common/ProjectDetailsModal";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { useState } from "react";
 
 type Project = {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  screenshots: string[];
-  techStack: string[];
-  features: string[];
-  challenges: string;
-  results: string;
-  type: string;
-  status: string;
-  liveLink: string;
-  githubLink: string;
-  detailsLink: string;
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+    screenshots: string[];
+    techStack: string[];
+    features: string[];
+    challenges: string;
+    results: string;
+    type: string;
+    status: string;
+    liveLink: string;
+    githubLink: string;
+    detailsLink: string;
 };
 
 export default function ProjectsPage() {
@@ -100,106 +100,32 @@ export default function ProjectsPage() {
                     </div>
 
                     {/* Card Grid Layout */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {projects.map((project: Project, index: number) => (
-                            <motion.div
-                                key={project.id || index}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4, delay: index * 0.1 }}
-                                onMouseEnter={() => setHoveredIndex(index)}
-                                onMouseLeave={() => setHoveredIndex(null)}
-                                onClick={() => handleCardClick(project)}
-                                className="group relative flex flex-col justify-between bg-[#1a2340] border border-fuchsia-500/10 rounded-[28px] overflow-hidden shadow-2xl transition-all duration-300 hover:border-fuchsia-500/30 hover:shadow-[0_15px_40px_rgba(71,69,167,0.15)] cursor-pointer text-slate-100"
-                            >
-                                <div>
-                                    {/* Thumbnail Mockup Banner */}
-                                    <div className="h-44 bg-[#121620] w-full p-5 relative overflow-hidden border-b border-slate-900 flex items-center justify-center">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-[#4745a7]/5 to-[#fc6d5c]/5 opacity-40" />
 
-                                        {/* Status & Type Tags */}
-                                        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
-                                            <span className="text-[10px] font-black tracking-wider bg-pink-500/20 text-pink-400 border border-pink-500/30 px-2.5 py-1 rounded-md uppercase">
-                                                {project.type}
-                                            </span>
-                                            <span className="text-[10px] font-bold tracking-wider bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/30 flex items-center gap-1.5">
-                                                <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-                                                {project.status}
-                                            </span>
-                                        </div>
+                    <div className="mt-12 grid gap-4 lg:grid-cols-3">
+                        {projects.map((project, index) => {
+                            const isHovered = hoveredIndex === index;
 
-                                        {/* Thumbnail Image or Fallback Title */}
-                                        {project.image ? (
-                                            <Image
-                                                width={500}
-                                                height={500}
-                                                src={project.image}
-                                                alt={project.title}
-                                                className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-85 transition-all duration-500"
-                                            />
-                                        ) : (
-                                            <span className="text-xl font-black text-slate-800 tracking-widest uppercase select-none group-hover:text-slate-700 transition-colors">
-                                                {project.title.split(" ")[0]}
-                                            </span>
-                                        )}
-                                    </div>
+                            return (
+                                <motion.div
+                                    key={project.id || index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                                    onMouseEnter={() => setHoveredIndex(index)}
+                                    onMouseLeave={() => setHoveredIndex(null)}
+                                    onClick={() => handleCardClick(project)}
+                                    className="group relative"
+                                >
+                                    <ProjectCard
 
-                                    {/* Content Details */}
-                                    <div className="p-6 space-y-4">
-                                        <h3 className="text-lg font-bold text-slate-110 group-hover:text-[#fc6d5c] transition-colors tracking-wide">
-                                            {project.title}
-                                        </h3>
-                                        <p className="text-xs text-slate-300 leading-relaxed font-sans line-clamp-3 font-medium">
-                                            {project.description}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Tech Stack & Action Buttons */}
-                                <div className="p-6 pt-0 space-y-6">
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {project.techStack?.slice(0, 5).map((tech: string, i: number) => (
-                                            <span
-                                                key={i}
-                                                className="text-[10px] bg-pink-600/20 text-pink-300 px-2 py-0.5 rounded border border-pink-600/30 font-semibold"
-                                            >
-                                                {tech.toUpperCase()}
-                                            </span>
-                                        ))}
-                                    </div>
-
-                                    <div className="flex items-center justify-between pt-4 border-t border-slate-800/65 text-xs font-bold">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleCardClick(project);
-                                            }}
-                                            className="text-slate-400 hover:text-white flex items-center gap-1 transition-colors font-sans font-bold"
-                                        >
-                                            View Details
-                                            <span className="text-xs">&rarr;</span>
-                                        </button>
-
-                                        {project.liveLink && project.liveLink !== "#" ? (
-                                            <a
-                                                href={project.liveLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                onClick={(e) => e.stopPropagation()}
-                                                className="text-[#fc6d5c] hover:text-[#fc6d5c]/85 flex items-center gap-1.5 tracking-wider hover:underline"
-                                            >
-                                                Live Demo
-                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 002-2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                </svg>
-                                            </a>
-                                        ) : (
-                                            <span className="text-slate-600 italic font-sans text-[10px]">No Demo Url</span>
-                                        )}
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                        key={project.id}
+                                        project={project}
+                                        index={index}
+                                        onViewDetails={handleCardClick}
+                                    />
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </section>
 
