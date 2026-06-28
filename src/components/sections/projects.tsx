@@ -10,6 +10,7 @@ import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import ProjectCard from "../common/ProjectCard/ProjectCard";
 // GSAP প্লাগইন রেজিস্টার করা হলো
 gsap.registerPlugin(ScrollTrigger);
 
@@ -152,7 +153,7 @@ export default function ProjectsSection() {
         {/* GSAP wrapper wrapperRef ব্যবহার করা হয়েছে */}
         <div
           ref={wrapperRef}
-          className="relative w-full overflow-hidden"
+          className="relative w-full overflow-hidden hidden lg:block"
           style={{
             height: "100vh", // স্ক্রিন লক বা পিন করার জন্য এটি স্ক্রিন সাইজের হবে
           }}
@@ -302,7 +303,19 @@ export default function ProjectsSection() {
             </div>
           ))}
         </div>
-
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6 lg:hidden">
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={index}
+              onViewDetails={(project) => {
+                setSelectedProject(project);
+                setIsModalOpen(true);
+              }}
+            />
+          ))}
+        </div>
         <div className="flex justify-center mt-20">
           <Link
             href="/projects"

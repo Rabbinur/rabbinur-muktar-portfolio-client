@@ -168,7 +168,7 @@ export default function Navbar() {
               {mounted && (
                 <button
                   onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-                  className="p-2 rounded-xl hover:bg-input border border-border/40 transition-colors text-muted-foreground hover:text-foreground"
+                  className="p-2 hidden rounded-xl hover:bg-input border border-border/40 transition-colors text-muted-foreground hover:text-foreground"
                   aria-label="Toggle Theme"
                 >
                   {resolvedTheme === "dark" ? <Sun size={15} /> : <Moon size={15} />}

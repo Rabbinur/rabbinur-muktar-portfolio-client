@@ -46,7 +46,7 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
 
         return prev + 1;
       });
-    }, 40); 
+    }, 15); 
 
     return () => clearInterval(interval);
   }, [logIndex]);
