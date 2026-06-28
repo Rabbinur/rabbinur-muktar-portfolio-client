@@ -38,7 +38,19 @@ export default function AddProjectPage() {
 
   const [isLocalSaving, setIsLocalSaving] = useState(false);
 
-  const [techList, setTechList] = useState<string[]>([]);
+  const DEFAULT_TECH_STACK = [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Tailwind CSS",
+    "Framer Motion",
+    "Node.js",
+    "Express.js",
+    "MongoDB",
+    "Redis"
+  ];
+
+  const [techList, setTechList] = useState<string[]>(DEFAULT_TECH_STACK);
   const [featureList, setFeatureList] = useState<string[]>([]);
 
   // Pending files — held locally until Save is clicked
@@ -74,7 +86,7 @@ export default function AddProjectPage() {
       screenshots: [],
       description: "",
       techStackInput: "",
-      techStack: [],
+      techStack: DEFAULT_TECH_STACK,
       featuresInput: "",
       features: [],
       challenges: "",

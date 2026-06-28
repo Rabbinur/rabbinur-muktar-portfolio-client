@@ -44,14 +44,27 @@ export async function POST(req: NextRequest) {
     await mongodbConnection();
     const body = await req.json();
 
-    if (!body.title || !body.slug || !body.thumbnail || !body.description || !body.techStack) {
+    if (!body.title || !body.thumbnail || !body.description || !body.techStack) {
       return NextResponse.json(
         { success: false, message: "Required fields are missing" },
         { status: 400 }
       );
     }
 
-    const project = await ProjectModel.create(body);
+    // Auto-generate slug from title if not provided
+    if (!body.slug || body.slug.trim() === "") {
+      body.slug = body.title
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+    }
+
+    // Remove form-only helper fields before saving
+    const { techStackInput, featuresInput, ...cleanBody } = body;
+
+    const project = await ProjectModel.create(cleanBody);
 
     // Revalidate paths for instant portfolio updates
     revalidatePath("/");
