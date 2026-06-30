@@ -1,7 +1,10 @@
 "use client";
 
 import { useGetProjectsQuery } from "@/components/Redux/RTK/portfolioApi";
-import ProjectDetailsModal from "@/components/common/ProjectDetailsModal";
+import dynamic from "next/dynamic";
+const ProjectDetailsModal = dynamic(() => import("@/components/common/ProjectDetailsModal"), {
+  ssr: false,
+});
 import { motion } from 'framer-motion';
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

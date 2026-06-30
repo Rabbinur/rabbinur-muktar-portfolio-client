@@ -11,6 +11,7 @@ import Projects from "@/components/sections/projects";
 import Services from "@/components/sections/service";
 import TechStackSection from "@/components/sections/tech-stack";
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 const API_URL = "/api";
 let hasLoadedOnce = false;
 
@@ -31,29 +32,31 @@ export default function Home() {
 
   return (
     <>
-      {showLoader ? (
-        <UltimatePortfolioLoader
-          onComplete={() => {
-            setIsLoading(false);
-            hasLoadedOnce = true;
-          }}
-        />
-      ) : (
-        <div className="flex flex-col min-h-screen">
-          <main className="flex-grow">
-            {/* Sections */}
-            <Hero settings={settings} apiUrl={API_URL} projectCount={projects.length} />
-            <About settings={settings} projectCount={projects.length} />
-            <Services settings={settings} projectCount={projects.length} />
+      <div className="flex flex-col min-h-screen">
+        <main className="flex-grow">
+          {/* Sections */}
+          <Hero settings={settings} apiUrl={API_URL} projectCount={projects.length} />
+          <About settings={settings} projectCount={projects.length} />
+          <Services settings={settings} projectCount={projects.length} />
 
-            <TechStackSection />
-            <Experience experiences={experiences} />
-            <Projects />
-            <GetSection />
-            <Contact settings={settings} apiUrl={API_URL} />
-          </main>
-        </div>
-      )}
+          <TechStackSection />
+          <Experience experiences={experiences} />
+          <Projects />
+          <GetSection />
+          <Contact settings={settings} apiUrl={API_URL} />
+        </main>
+      </div>
+
+      <AnimatePresence>
+        {showLoader && (
+          <UltimatePortfolioLoader
+            onComplete={() => {
+              setIsLoading(false);
+              hasLoadedOnce = true;
+            }}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

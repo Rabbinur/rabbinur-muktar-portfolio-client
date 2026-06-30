@@ -356,6 +356,7 @@ Looking forward to hearing from you!`;
                   alt="Developer Profile"
                   fill
                   priority
+                  sizes="true"
                   className="rounded-full object-cover"
                 />
               </div>

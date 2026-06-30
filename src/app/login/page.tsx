@@ -86,9 +86,10 @@ const LoginPage = () => {
             <div className="flex justify-center">
               <Image
                 src={`/rabbinur-logo.png`}
-                alt="logo-dg"
+                alt="logo"
                 height={80}
                 width={250}
+                loading="eager"
                 className="h-auto w-auto max-h-20 md:max-h-24"
               />
             </div>

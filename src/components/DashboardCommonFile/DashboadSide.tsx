@@ -16,7 +16,7 @@ const DashboardSide = () => {
       <Link href={`/dashboard/`}>
         <div className=" p-2 md:p-3 border-b">
           <Image
-            src={"/logo.png"}
+            src={"/rabbinur-logo.png"}
             alt="logo"
             width={200}
             height={80}

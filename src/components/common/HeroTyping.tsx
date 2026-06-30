@@ -43,8 +43,8 @@ export default function HeroTyping({
   }, [strings, typeSpeed, backSpeed, backDelay, loop, cursorChar]);
 
   return (
-    <span className={className}>
+    <div className={`block min-h-[42px] sm:min-h-[50px] lg:min-h-[64px] ${className}`}>
       <span ref={typedRef} />
-    </span>
+    </div>
   );
 }
