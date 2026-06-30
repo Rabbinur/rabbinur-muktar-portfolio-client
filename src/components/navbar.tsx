@@ -188,7 +188,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Top Theme Switcher Only */}
-            <div className="flex items-center gap-2.5 lg:hidden relative z-[60]">
+            <div className="flex  items-center gap-2.5 lg: hidden relative z-[60]">
               {mounted && (
                 <button
                   onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
