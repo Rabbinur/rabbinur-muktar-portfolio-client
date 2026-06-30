@@ -21,6 +21,7 @@ interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
   onCollapse: () => void;
+  isMobile?: boolean;
 }
 
 export function Sidebar(props: SidebarProps) {
@@ -49,7 +50,7 @@ export function Sidebar(props: SidebarProps) {
   );
 }
 
-function SidebarContent({ open, collapsed, onToggle }: SidebarProps) {
+function SidebarContent({ open, collapsed, onToggle, isMobile }: SidebarProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
@@ -84,8 +85,8 @@ function SidebarContent({ open, collapsed, onToggle }: SidebarProps) {
   useEffect(() => {
     const activeDropdown = sidebarMenu.find(
       (menu) =>
-        menu.type === "dropdown" &&
-        menu.items?.some((item) => isActive(item.href))
+          menu.type === "dropdown" &&
+          menu.items?.some((item) => isActive(item.href))
     );
     if (activeDropdown && activeDropdown.key) {
       setExpandedMenu(activeDropdown.key);
@@ -93,20 +94,26 @@ function SidebarContent({ open, collapsed, onToggle }: SidebarProps) {
   }, [pathname, role]);
 
   return (
-    <div className="flex shadow  flex-col print:hidden">
+    <div className={cn("flex flex-col print:hidden", !isMobile && "shadow")}>
       {/* Mobile Toggle */}
-      <button
-        onClick={onToggle}
-        className="fixed top-4 left-4 z-50 md:hidden bg-white p-2.5 rounded-xl shadow-xl border border-slate-100 text-[#001f3f]"
-      >
-        {open ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      {!isMobile && (
+        <button
+          onClick={onToggle}
+          className="fixed top-4 left-4 z-50 md:hidden bg-white p-2.5 rounded-xl shadow-xl border border-slate-100 text-[#001f3f]"
+        >
+          {open ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      )}
 
       <aside
         className={cn(
-          "fixed md:relative h-screen bg-white transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] z-40 border-r border-slate-100 flex flex-col shadow-[10px_0_30px_-15px_rgba(0,0,0,0.04)]",
-          open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-          collapsed ? "w-20" : "w-[280px]"
+          isMobile
+            ? "w-full h-full bg-white flex flex-col"
+            : cn(
+                "fixed md:relative h-screen bg-white transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] z-40 border-r border-slate-100 flex flex-col shadow-[10px_0_30px_-15px_rgba(0,0,0,0.04)]",
+                open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+                collapsed ? "w-20" : "w-[280px]"
+              )
         )}
       >
         {/* Brand Header */}
