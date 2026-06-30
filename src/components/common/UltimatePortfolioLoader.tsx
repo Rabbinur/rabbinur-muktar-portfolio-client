@@ -1,7 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -36,35 +36,27 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
   ];
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    interval = setInterval(() => {
+    const interval = setInterval(() => {
       setProgress((prev) => {
-        const next = prev + 1;
-
-        const currentTarget =
-          loadingLogs[logIndex]?.progressTarget ?? 100;
-
-        if (next >= currentTarget && logIndex < loadingLogs.length - 1) {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            if (onComplete) onComplete();
+          }, 1000); // সব লাইন প্রিন্ট হওয়ার পর ১ সেকেন্ড হোল্ড করবে
+          return 100;
+        }
+        
+        const currentTarget = loadingLogs[logIndex]?.progressTarget || 100;
+        if (prev >= currentTarget && logIndex < loadingLogs.length - 1) {
           setLogIndex((v) => v + 1);
         }
 
-        if (next >= 100) {
-          clearInterval(interval);
-
-          setTimeout(() => {
-            onComplete?.();
-          }, 800);
-
-          return 100;
-        }
-
-        return next;
+        return prev + 1;
       });
-    }, 20);
+    }, 15); 
 
     return () => clearInterval(interval);
-  }, [logIndex, onComplete]);
+  }, [logIndex]);
 
   return (
     <motion.section
@@ -73,16 +65,16 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="fixed inset-0 bg-[#04060a] z-[9999] flex flex-col justify-between p-6 md:p-16 font-mono overflow-hidden select-none"
     >
-
+      
       {/* 🕸️ সাইবার গ্রিড ব্যাকগ্রাউন্ড ওভারলে */}
-      <div
+      <div 
         className="absolute inset-0 opacity-[0.02] pointer-events-none"
         style={{
           backgroundImage: `linear-gradient(to right, #4745a7 1px, transparent 1px), linear-gradient(to bottom, #4745a7 1px, transparent 1px)`,
           backgroundSize: "50px 50px"
         }}
       />
-
+      
       {/* ব্যাকগ্রাউন্ড রিচ গ্লো ওভ্যাল */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#fc6d5c]/5 rounded-full blur-[160px] pointer-events-none" />
 
@@ -92,7 +84,7 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
           <span className="w-2 h-2 rounded-full bg-[#fc6d5c] animate-pulse" />
           RABBINUR OS · V3.0.26
         </div>
-
+        
         {loadingLogs.slice(0, logIndex + 1).map((log, i) => {
           const isCurrentLine = i === logIndex;
           const cleanText = log.text.replace(" OK", "");
@@ -102,7 +94,7 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
           return (
             <div key={i} className="flex items-center min-h-[20px] flex-wrap">
               <span className="text-[#4745a7] mr-2 font-bold shrink-0">&gt;</span>
-
+              
               {isCurrentLine ? (
                 <div className="flex items-center relative">
                   <motion.div
@@ -115,7 +107,7 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
                     <span className={isReadyLine ? "text-red-500 font-extrabold tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.6)] animate-pulse" : "text-[#fc6d5c]"}>
                       {cleanText}
                     </span>
-
+                    
                     {hasOK && <span className="text-emerald-400 font-bold ml-1">OK</span>}
                   </motion.div>
 
@@ -143,7 +135,7 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
         <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-8xl font-black tracking-[0.1em] sm:tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-[#fc6d5c] via-[#ff8473] to-[#4745a7] drop-shadow-[0_0_35px_rgba(252,109,92,0.15)] uppercase pl-[0.1em] sm:pl-[0.25em]">
           Rabbinur
         </h1>
-
+        
         <div className="text-5xl sm:text-7xl md:text-9xl font-extralight text-white font-sans tracking-tighter mt-4 flex items-baseline">
           {progress}
           <span className="text-xl sm:text-2xl md:text-4xl text-[#fc6d5c] font-black ml-1 font-mono">%</span>
@@ -168,7 +160,7 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
 
         {/* স্লিম নিয়ন প্রোগ্রেস বার */}
         <div className="w-56 h-[2px] bg-slate-950 rounded-full overflow-hidden relative border border-slate-900/50">
-          <motion.div
+          <motion.div 
             className="h-full bg-gradient-to-r from-[#fc6d5c] to-[#4745a7] shadow-[0_0_8px_#fc6d5c]"
             style={{ width: `${progress}%` }}
           />
