@@ -34,14 +34,14 @@ export default function Home() {
     <>
 
       {showLoader ? (
-        <AnimatePresence>
+    
           <UltimatePortfolioLoader
             onComplete={() => {
               setIsLoading(false);
               hasLoadedOnce = true;
             }}
           />
-        </AnimatePresence>
+     
       ) : (
         <div className="flex flex-col min-h-screen">
           <main className="flex-grow">
