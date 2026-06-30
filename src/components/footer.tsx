@@ -1,9 +1,10 @@
 "use client";
 
+import { usePwa } from "@/components/Provider/PwaProvider";
 import { useGetSettingsQuery } from "@/components/Redux/RTK/portfolioApi";
 import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, MessageCircle, Smartphone } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { usePwa } from "@/components/Provider/PwaProvider";
 import { toast } from "sonner";
 
 const QUICK_LINKS = [
@@ -35,8 +36,28 @@ export default function Footer() {
   const handleDownloadApp = async () => {
     if (isInstallable) {
       await installApp();
-    } else if (isAlreadyInstalled || isStandalone) {
+      return;
+    }
+
+    if (isAlreadyInstalled || isStandalone) {
       toast.success("This app is already installed on your device!");
+      return;
+    }
+
+    const UA = typeof navigator !== "undefined" ? navigator.userAgent : "";
+    const isIOS = /iPhone|iPad|iPod/i.test(UA);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(UA);
+
+    if (isIOS) {
+      toast.info(
+        "To install this app:\n• Tap the Share button 📤 in your Safari browser and select 'Add to Home Screen' ➕",
+        { duration: 8000 }
+      );
+    } else if (isMobile) {
+      toast.info(
+        "App installer is initializing... If it doesn't prompt, you can install it by tapping your browser menu ••• and selecting 'Install App' or 'Add to Home Screen'.",
+        { duration: 8000 }
+      );
     } else if (isNativeSupported) {
       toast.info(
         "App installer is initializing... If it doesn't appear, you can also click the install icon 🖥️ in the top-right of your address bar, or refresh the page.",
@@ -44,7 +65,7 @@ export default function Footer() {
       );
     } else {
       toast.info(
-        "To install this app:\n• iOS Safari: Tap Share 📤 then 'Add to Home Screen' ➕\n• Other browsers: Tap menu ••• then 'Add to Home Screen'",
+        "To install this app:\n• Click your browser menu ••• and select 'Install' or 'Add to Home Screen'.",
         { duration: 8000 }
       );
     }
@@ -86,9 +107,13 @@ export default function Footer() {
           {/* Col 1: Brand */}
           <div className="space-y-4">
             <Link href="#home" className="inline-block group">
-              <span className="font-heading font-black text-xl tracking-tight text-foreground transition-colors group-hover:text-secondary">
-                {personal.name || "Rabbinur Muktar"}<span className="text-secondary">.</span>
-              </span>
+              <Image
+                src="/rabbinur-logo.png"
+                alt="Rabbinur Muktar"
+                width={100}
+                height={100}
+                className="h-8 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              />
             </Link>
             <p className="text-xs text-slate-500 dark:text-slate-500 font-medium leading-relaxed max-w-[220px]">
               {personal.role || "Full Stack Developer"} based in {location}. Building modern, beautiful, and highly scalable web applications with clean code and rich aesthetics.

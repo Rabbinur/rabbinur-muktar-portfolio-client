@@ -18,8 +18,28 @@ export default function FloatingActions() {
     const handleInstallClick = async () => {
         if (isInstallable) {
             await installApp();
-        } else if (isAlreadyInstalled || isStandalone) {
+            return;
+        }
+        
+        if (isAlreadyInstalled || isStandalone) {
             toast.success("This app is already installed on your device!");
+            return;
+        }
+
+        const UA = typeof navigator !== "undefined" ? navigator.userAgent : "";
+        const isIOS = /iPhone|iPad|iPod/i.test(UA);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(UA);
+
+        if (isIOS) {
+            toast.info(
+                "To install this app:\n• Tap the Share button 📤 in your Safari browser and select 'Add to Home Screen' ➕",
+                { duration: 8000 }
+            );
+        } else if (isMobile) {
+            toast.info(
+                "App installer is initializing... If it doesn't prompt, you can install it by tapping your browser menu ••• and selecting 'Install App' or 'Add to Home Screen'.",
+                { duration: 8000 }
+            );
         } else if (isNativeSupported) {
             toast.info(
                 "App installer is initializing... If it doesn't appear, you can also click the install icon 🖥️ in the top-right of your address bar, or refresh the page.",
@@ -27,7 +47,7 @@ export default function FloatingActions() {
             );
         } else {
             toast.info(
-                "To install this app:\n• iOS Safari: Tap Share 📤 then 'Add to Home Screen' ➕\n• Other browsers: Tap menu ••• then 'Add to Home Screen'",
+                "To install this app:\n• Click your browser menu ••• and select 'Install' or 'Add to Home Screen'.",
                 { duration: 8000 }
             );
         }
