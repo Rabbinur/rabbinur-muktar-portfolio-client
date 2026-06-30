@@ -14,12 +14,16 @@ export interface BeforeInstallPromptEvent extends Event {
 interface PwaContextType {
   isInstallable: boolean;
   isStandalone: boolean;
+  isAlreadyInstalled: boolean;
+  isNativeSupported: boolean;
   installApp: () => Promise<void>;
 }
 
 const PwaContext = createContext<PwaContextType>({
   isInstallable: false,
   isStandalone: false,
+  isAlreadyInstalled: false,
+  isNativeSupported: false,
   installApp: async () => {},
 });
 
@@ -29,13 +33,35 @@ export default function PwaProvider({ children }: { children: React.ReactNode })
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [isAlreadyInstalled, setIsAlreadyInstalled] = useState(false);
+  const [isNativeSupported, setIsNativeSupported] = useState(false);
 
   useEffect(() => {
+    // Check if browser natively supports installation prompt
+    setIsNativeSupported("onbeforeinstallprompt" in window);
+
     // Check if running in standalone mode (installed app window)
     const checkStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as any).standalone === true;
     setIsStandalone(checkStandalone);
+
+    // Check if already installed in localStorage
+    if (localStorage.getItem("pwa_installed") === "true") {
+      setIsAlreadyInstalled(true);
+    }
+
+    // Double check with navigator API if supported
+    if ("navigator" in window && "getInstalledRelatedApps" in navigator) {
+      (navigator as any).getInstalledRelatedApps()
+        .then((relatedApps: any[]) => {
+          if (relatedApps && relatedApps.length > 0) {
+            setIsAlreadyInstalled(true);
+            localStorage.setItem("pwa_installed", "true");
+          }
+        })
+        .catch((err: any) => console.log("Failed to check installed apps: ", err));
+    }
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -51,6 +77,8 @@ export default function PwaProvider({ children }: { children: React.ReactNode })
       setDeferredPrompt(null);
       setIsInstallable(false);
       setIsStandalone(true);
+      setIsAlreadyInstalled(true);
+      localStorage.setItem("pwa_installed", "true");
       console.log("App installed successfully");
       
       // Track installation count in database
@@ -85,7 +113,15 @@ export default function PwaProvider({ children }: { children: React.ReactNode })
   };
 
   return (
-    <PwaContext.Provider value={{ isInstallable, isStandalone, installApp }}>
+    <PwaContext.Provider
+      value={{
+        isInstallable,
+        isStandalone,
+        isAlreadyInstalled,
+        isNativeSupported,
+        installApp,
+      }}
+    >
       {children}
     </PwaContext.Provider>
   );

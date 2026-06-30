@@ -12,15 +12,22 @@ export default function FloatingActions() {
     const resumeUrl = settingsRes?.data?.personalInfo?.resumeUrl || "";
     const whatsapp = settingsRes?.data?.contactInfo?.whatsapp || "01685111860";
 
-    const { isInstallable, isStandalone, installApp } = usePwa();
+    const { isInstallable, isStandalone, isAlreadyInstalled, isNativeSupported, installApp } = usePwa();
     const [trackResumeDownload] = useTrackResumeDownloadMutation();
 
     const handleInstallClick = async () => {
         if (isInstallable) {
             await installApp();
+        } else if (isAlreadyInstalled || isStandalone) {
+            toast.success("This app is already installed on your device!");
+        } else if (isNativeSupported) {
+            toast.info(
+                "App installer is initializing... If it doesn't appear, you can also click the install icon 🖥️ in the top-right of your address bar, or refresh the page.",
+                { duration: 8000 }
+            );
         } else {
             toast.info(
-                "To install this app:\n• iOS Safari: Tap Share 📤 then 'Add to Home Screen' ➕\n• Chrome/Edge/Firefox: Tap menu ••• then 'Install' or 'Add to Home Screen'",
+                "To install this app:\n• iOS Safari: Tap Share 📤 then 'Add to Home Screen' ➕\n• Other browsers: Tap menu ••• then 'Add to Home Screen'",
                 { duration: 8000 }
             );
         }

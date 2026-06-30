@@ -7,6 +7,13 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
   const [progress, setProgress] = useState(0);
   const [logIndex, setLogIndex] = useState(0);
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   // প্রতিটি লাইন আলাদা আলাদা অবজেক্টে ভাগ করা সিকোয়েন্স
   const loadingLogs = [
     { text: "initializing portfolio core ........... OK", progressTarget: 20 },
