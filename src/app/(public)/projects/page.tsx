@@ -2,7 +2,10 @@
 
 import { useGetProjectsQuery } from "@/components/Redux/RTK/portfolioApi";
 import ProjectCard from "@/components/common/ProjectCard/ProjectCard";
-import ProjectDetailsModal from "@/components/common/ProjectDetailsModal";
+import dynamic from "next/dynamic";
+const ProjectDetailsModal = dynamic(() => import("@/components/common/ProjectDetailsModal"), {
+  ssr: false,
+});
 import { motion } from "framer-motion";
 import { useState } from "react";
 

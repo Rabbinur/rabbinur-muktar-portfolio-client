@@ -1,8 +1,10 @@
 "use client";
 
 import { useGetSettingsQuery } from "@/components/Redux/RTK/portfolioApi";
-import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, MessageCircle, Smartphone } from "lucide-react";
 import Link from "next/link";
+import { usePwa } from "@/components/Provider/PwaProvider";
+import { toast } from "sonner";
 
 const QUICK_LINKS = [
   { label: "About", href: "#about" },
@@ -27,6 +29,21 @@ export default function Footer() {
   const socials = settings?.socialLinks || {};
   const personal = settings?.personalInfo || {};
   const contact = settings?.contactInfo || {};
+
+  const { isInstallable, isStandalone, installApp } = usePwa();
+
+  const handleDownloadApp = async () => {
+    if (isInstallable) {
+      await installApp();
+    } else if (isStandalone) {
+      toast.success("You are already running the standalone application!");
+    } else {
+      toast.info(
+        "To install this app:\n• iOS Safari: Tap Share 📤 then 'Add to Home Screen' ➕\n• Chrome/Edge/Firefox: Tap menu ••• then 'Install' or 'Add to Home Screen'",
+        { duration: 8000 }
+      );
+    }
+  };
 
   const email = contact.email || "rabbinur345@gmail.com";
   const phone = contact.phone || "+8801685111860";
@@ -85,6 +102,16 @@ export default function Footer() {
                   <Icon size={14} />
                 </a>
               ))}
+            </div>
+            {/* PWA Download App Button */}
+            <div className="pt-2">
+              <button
+                onClick={handleDownloadApp}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-secondary/35 bg-secondary/5 text-secondary hover:bg-secondary hover:text-white transition-all duration-300 hover:scale-[1.02] text-xs font-bold cursor-pointer"
+              >
+                <Smartphone size={14} />
+                {isStandalone ? "App Installed ✓" : "Download App"}
+              </button>
             </div>
           </div>
 

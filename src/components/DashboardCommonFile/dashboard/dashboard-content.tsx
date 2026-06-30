@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetProjectsQuery, useGetMessagesQuery, useGetSettingsQuery } from "@/components/Redux/RTK/portfolioApi";
-import { FolderGit2, Mail, Download, MessageSquare, ArrowRight, Clock } from "lucide-react";
+import { FolderGit2, Mail, Download, MessageSquare, ArrowRight, Clock, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 
@@ -34,7 +34,7 @@ export default function DashboardContent() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Projects Count Card */}
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between group hover:shadow-md transition-all">
           <div className="space-y-1.5">
@@ -84,6 +84,20 @@ export default function DashboardContent() {
           </div>
           <div className="bg-emerald-50 p-4 rounded-xl text-emerald-500 group-hover:scale-110 transition-transform">
             <Download size={24} />
+          </div>
+        </div>
+
+        {/* App Installations Count Card */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between group hover:shadow-md transition-all">
+          <div className="space-y-1.5">
+            <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">App Installs</p>
+            <h3 className="text-3xl font-black text-slate-800">
+              {isLoading ? <span className="animate-pulse">...</span> : (settingsData?.data?.appInstallCount || 0)}
+            </h3>
+            <p className="text-xs text-slate-400">Total PWA installations</p>
+          </div>
+          <div className="bg-indigo-50 p-4 rounded-xl text-indigo-600 group-hover:scale-110 transition-transform">
+            <Smartphone size={24} />
           </div>
         </div>
       </div>

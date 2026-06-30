@@ -96,6 +96,11 @@ export const metadata: Metadata = {
   },
 
   category: "technology",
+  appleWebApp: {
+    capable: true,
+    title: "Rabbinur",
+    statusBarStyle: "default",
+  },
 };
 
 /* JSON-LD Structured Data (SEO BOOST) */

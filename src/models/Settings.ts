@@ -65,6 +65,7 @@ const settingsSchema = new Schema(
     stat3Label: { type: String, default: "Years experience" },
     stat3Value: { type: String, default: "3+" },
     resumeDownloadCount: { type: Number, default: 0 },
+    appInstallCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,

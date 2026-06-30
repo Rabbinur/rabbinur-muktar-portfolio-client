@@ -52,7 +52,12 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
   }, [logIndex]);
 
   return (
-    <section className="fixed inset-0 bg-[#04060a] z-[9999] flex flex-col justify-between p-6 md:p-16 font-mono overflow-hidden select-none">
+    <motion.section
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+      className="fixed inset-0 bg-[#04060a] z-[9999] flex flex-col justify-between p-6 md:p-16 font-mono overflow-hidden select-none"
+    >
       
       {/* 🕸️ সাইবার গ্রিড ব্যাকগ্রাউন্ড ওভারলে */}
       <div 
@@ -155,6 +160,6 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
         </div>
       </div>
 
-    </section>
+    </motion.section>
   );
 }
