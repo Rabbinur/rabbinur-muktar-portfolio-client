@@ -17,13 +17,15 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar
-        open={sidebarOpen}
-        collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-        onCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
+      {/* Sidebar - Desktop Only */}
+      <div className="hidden md:block shrink-0">
+        <Sidebar
+          open={sidebarOpen}
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+          onCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+      </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">

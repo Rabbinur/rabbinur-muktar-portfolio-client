@@ -56,10 +56,10 @@ const DashboardHeader = ({ onMenuClick, onCollapseClick }: HeaderProps) => {
 
         {/* ✅ Mobile menu */}
 
-        <div className="md: hidden">
+        <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <button className="p-2 rounded-none hover:bg-secondary gray-100 ">
+              <button className="p-2 rounded-none hover:bg-secondary gray-100">
                 <Menu size={22} />
               </button>
             </SheetTrigger>
