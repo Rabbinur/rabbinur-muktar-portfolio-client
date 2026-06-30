@@ -32,31 +32,32 @@ export default function Home() {
 
   return (
     <>
-      {!showLoader && <div className="flex flex-col min-h-screen">
-        <main className="flex-grow">
-          {/* Sections */}
-          <Hero settings={settings} apiUrl={API_URL} projectCount={projects.length} />
-          <About settings={settings} projectCount={projects.length} />
-          <Services settings={settings} projectCount={projects.length} />
 
-          <TechStackSection />
-          <Experience experiences={experiences} />
-          <Projects />
-          <GetSection />
-          <Contact settings={settings} apiUrl={API_URL} />
-        </main>
-      </div>}
-
-      <AnimatePresence>
-        {showLoader && (
+      {showLoader ? (
+        <AnimatePresence>
           <UltimatePortfolioLoader
             onComplete={() => {
               setIsLoading(false);
               hasLoadedOnce = true;
             }}
           />
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      ) : (
+        <div className="flex flex-col min-h-screen">
+          <main className="flex-grow">
+            {/* Sections */}
+            <Hero settings={settings} apiUrl={API_URL} projectCount={projects.length} />
+            <About settings={settings} projectCount={projects.length} />
+            <Services settings={settings} projectCount={projects.length} />
+
+            <TechStackSection />
+            <Experience experiences={experiences} />
+            <Projects />
+            <GetSection />
+            <Contact settings={settings} apiUrl={API_URL} />
+          </main>
+        </div>
+      )}
     </>
   );
 }

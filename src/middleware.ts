@@ -83,6 +83,60 @@ export async function middleware(req: NextRequest) {
 
   const isAuthValid = accessToken && isValid && !isExpired;
 
+  // Protect API routes
+  if (pathname.startsWith("/api")) {
+    const method = req.method;
+
+    // Define public API patterns
+    const isPublicGet =
+      method === "GET" &&
+      (pathname === "/api/settings" ||
+        pathname === "/api/projects" ||
+        pathname.startsWith("/api/projects/") ||
+        pathname === "/api/experiences");
+
+    const isPublicPost =
+      method === "POST" &&
+      (pathname === "/api/auth/login" ||
+        pathname === "/api/messages" ||
+        pathname === "/api/install" ||
+        pathname === "/api/resume");
+
+    const isPublicLogout = pathname === "/api/auth/logout";
+
+    const isPublicApi = isPublicGet || isPublicPost || isPublicLogout;
+
+    if (!isPublicApi) {
+      // Check Authorization header in addition to cookies
+      let token = accessToken;
+      if (!token) {
+        const authHeader = req.headers.get("Authorization");
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+          token = authHeader.substring(7);
+        }
+      }
+
+      let apiAuthValid = false;
+      if (token) {
+        const signatureValid = await verifyJwtSignature(token, JWT_SECRET);
+        if (signatureValid) {
+          const decoded = decodeJwt(token);
+          if (decoded && decoded.exp) {
+            const currentTime = Math.floor(Date.now() / 1000);
+            apiAuthValid = currentTime < decoded.exp;
+          }
+        }
+      }
+
+      if (!apiAuthValid) {
+        return NextResponse.json(
+          { success: false, message: "Unauthorized access: Token missing or expired" },
+          { status: 401 }
+        );
+      }
+    }
+  }
+
   // Protect /dashboard routes
   if (pathname.startsWith("/dashboard")) {
     if (!isAuthValid) {
@@ -105,7 +159,7 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Scoped matcher config
+// Scoped matcher config to include /api routes
 export const config = {
-  matcher: ["/dashboard/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/login", "/api/:path*"],
 };
