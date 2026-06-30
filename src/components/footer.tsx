@@ -44,9 +44,34 @@ export default function Footer() {
       return;
     }
 
+    // Check if we are in development mode or non-secure local IP (both block PWAs)
+    const isDev = process.env.NODE_ENV === "development";
+    const isLocalIP = typeof window !== "undefined" && 
+        window.location.protocol === "http:" && 
+        window.location.hostname !== "localhost" && 
+        window.location.hostname !== "127.0.0.1";
+
+    if (isDev) {
+        toast.warning(
+            "You are in Development Mode. PWA features are disabled by default in development. Please build the project ('npm run build && npm run start') to test installation.",
+            { duration: 8000 }
+        );
+        return;
+    }
+
+    if (isLocalIP) {
+        toast.warning(
+            "PWA installation requires a secure context (HTTPS) on mobile. Please connect via HTTPS or test on localhost.",
+            { duration: 8000 }
+        );
+        return;
+    }
+
     const UA = typeof navigator !== "undefined" ? navigator.userAgent : "";
-    const isIOS = /iPhone|iPad|iPod/i.test(UA);
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(UA);
+    const isIOS = /iPhone|iPad|iPod/i.test(UA) || (typeof navigator !== "undefined" && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(UA);
+    const isMobileScreen = typeof window !== "undefined" && (window.innerWidth <= 768 || window.matchMedia("(pointer: coarse)").matches);
+    const isMobile = isMobileUA || isMobileScreen;
 
     if (isIOS) {
       toast.info(
