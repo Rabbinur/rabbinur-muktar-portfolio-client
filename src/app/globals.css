@@ -12,7 +12,7 @@
 
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
-  
+
   /* Sidebar and chart color tokens for admin dashboard */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -40,7 +40,7 @@
   --ring: #ff7849;
   --primary: #4745a7;
   --secondary: #fc6d5c;
-  
+
   /* Fallback values for sidebar and charts to avoid compile warnings */
   --sidebar: #ffffff;
   --sidebar-foreground: #1a1a1a;
@@ -50,7 +50,7 @@
   --sidebar-accent-foreground: #1a1a1a;
   --sidebar-border: #e5e5e5;
   --sidebar-ring: #ef1f26;
-  
+
   --chart-1: #ef1f26;
   --chart-2: #3949ab;
   --chart-3: #43a047;
@@ -106,7 +106,8 @@
 html,
 body {
   max-width: 100%;
-  overflow-x: clip; /* 'clip' does not create a scroll container unlike 'hidden', so position:sticky works */
+  overflow-x: clip;
+  /* 'clip' does not create a scroll container unlike 'hidden', so position:sticky works */
 }
 
 body {
@@ -288,17 +289,4 @@ h6 {
   background: rgba(255, 255, 255, 0.95);
   border-color: rgba(255, 120, 73, 0.25);
   box-shadow: 0 15px 45px -12px rgba(255, 120, 73, 0.15);
-}
-
-/* Visual Continuity / Startup Loader Helpers */
-.portfolio-loading {
-  background-color: #04060a !important;
-}
-.portfolio-loading body {
-  background-color: #04060a !important;
-  overflow: hidden !important;
-}
-.portfolio-loading main {
-  visibility: hidden !important;
-  opacity: 0 !important;
 }
