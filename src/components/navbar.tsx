@@ -164,8 +164,8 @@ export default function Navbar() {
               ))}
             </nav>
 
-            <div className="hidden lg:flex items-center gap-4">
-              {mounted && (
+            <div className="hi dden lg: flex items-center gap-4">
+              {/* {mounted && (
                 <button
                   onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
                   className="p-2 hidden rounded-xl hover:bg-input border border-border/40 transition-colors text-muted-foreground hover:text-foreground"
@@ -173,7 +173,7 @@ export default function Navbar() {
                 >
                   {resolvedTheme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
                 </button>
-              )}
+              )} */}
               <Link
                 href={isHomePage ? "#contact" : "/#contact"}
                 onClick={(e) => {
