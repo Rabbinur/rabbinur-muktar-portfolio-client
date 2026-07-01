@@ -1,6 +1,5 @@
 "use client";
 
-import { useGetProjectsQuery } from "@/components/Redux/RTK/portfolioApi";
 import dynamic from "next/dynamic";
 const ProjectDetailsModal = dynamic(() => import("@/components/common/ProjectDetailsModal"), {
   ssr: false,
@@ -14,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import ProjectCard from "../common/ProjectCard/ProjectCard";
+import type { HomeProject } from "@/lib/homeApi";
 // GSAP প্লাগইন রেজিস্টার করা হলো
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,34 +34,36 @@ type Project = {
   detailsLink: string;
 };
 
-export default function ProjectsSection() {
-  const { data: projectsRes, isLoading } = useGetProjectsQuery(undefined);
+// ─── Fix 1: Correct function declaration syntax (not arrow function) ───────
+// ─── Fix 2: Correct prop name (porjects → projects) ──────────────────────
+// ─── Fix 3: Correct prop type (HomeProject[], already flat from server) ───
+export default function ProjectsSection({ projects: rawProjects }: { projects: HomeProject[] }) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  const projects: Project[] =
-    projectsRes?.data?.data?.map((p: any) => ({
-      id: p._id || p.id,
-      title: p.title,
-      description: p.description,
-      image: p.thumbnail,
-      screenshots: p.screenshots || [],
-      techStack: p.techStack || [],
-      features: p.features || [],
-      challenges: p.challenges || "",
-      results: p.results || "",
-      type: p.type || "WEB APP",
-      status: p.status || "Completed",
-      liveLink: p.liveLink || "",
-      githubLink: p.githubLink || "",
-      detailsLink: p.detailsLink || "",
-    })) || [];
+  // ─── Fix 4: rawProjects is already HomeProject[] — no .data needed ───────
+  const projects: Project[] = (rawProjects ?? []).map((p) => ({
+    id: (p._id as string) || "",
+    title: p.title || "",
+    description: (p.description as string) || "",
+    image: (p.thumbnail as string) || "",
+    screenshots: (p.screenshots as string[]) || [],
+    techStack: p.techStack || [],
+    features: (p.features as string[]) || [],
+    challenges: (p.challenges as string) || "",
+    results: (p.results as string) || "",
+    type: (p.type as string) || "WEB APP",
+    status: (p.status as string) || "Completed",
+    liveLink: (p.liveLink as string) || "",
+    githubLink: (p.githubLink as string) || "",
+    detailsLink: (p.detailsLink as string) || "",
+  }));
 
   useEffect(() => {
-    if (isLoading || !projects.length || !wrapperRef.current) return;
+    if (!projects.length || !wrapperRef.current) return;
 
     // ১. smooth scrolling এর জন্য Lenis ইনিশিয়ালাইজ করা হলো
     const lenis = new Lenis({
@@ -137,9 +139,9 @@ export default function ProjectsSection() {
       lenis.destroy();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [isLoading, projects.length]);
+  }, [projects.length]);
 
-  if (isLoading || !projects.length) return null;
+  if (!projects.length) return null;
 
   return (
     <section id="projects" className="relative bg-[#ebe3fa] py-20">
