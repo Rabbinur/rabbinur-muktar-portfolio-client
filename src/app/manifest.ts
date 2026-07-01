@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Hire Full Stack Developer Bangladesh | Next.js & React Expert - Rabbinur Muktar",
     start_url: "/",
     display: "standalone",
-    background_color: "#fafcff",
+    background_color: "#04060a",
     theme_color: "#4745a7",
     icons: [
       {
