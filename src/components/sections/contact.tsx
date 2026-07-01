@@ -87,8 +87,9 @@ export default function Contact({ settings }: { settings: any; apiUrl?: string }
           >
             {/* Name */}
             <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">Name</label>
+              <label htmlFor="contact-name" className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">Name</label>
               <input
+                id="contact-name"
                 type="text"
                 placeholder="Enter your name"
                 {...register("name")}
@@ -99,8 +100,9 @@ export default function Contact({ settings }: { settings: any; apiUrl?: string }
 
             {/* Email */}
             <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">Email</label>
+              <label htmlFor="contact-email" className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">Email</label>
               <input
+                id="contact-email"
                 type="email"
                 placeholder="Enter your email"
                 {...register("email")}
@@ -111,8 +113,9 @@ export default function Contact({ settings }: { settings: any; apiUrl?: string }
 
             {/* Message */}
             <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">Message</label>
+              <label htmlFor="contact-message" className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">Message</label>
               <textarea
+                id="contact-message"
                 rows={4}
                 placeholder="Write your message details here..."
                 {...register("message")}

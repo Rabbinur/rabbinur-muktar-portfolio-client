@@ -1,8 +1,8 @@
 "use client";
 
-import { useGetSettingsQuery } from "@/components/Redux/RTK/portfolioApi";
 import { motion } from "framer-motion";
 import { Github, Instagram, Linkedin, Mail, MessageCircle, Twitter } from "lucide-react";
+import type { HomeSettings } from "@/lib/homeApi";
 
 // Fallback contact data
 const FALLBACK = {
@@ -24,9 +24,7 @@ I came across your portfolio and I'm interested in discussing a potential projec
 
 Looking forward to hearing from you!`;
 
-export default function ContactSection() {
-  const { data: settingsRes } = useGetSettingsQuery(undefined);
-  const settings = settingsRes?.data || {};
+export default function ContactSection({ settings }: { settings: HomeSettings }) {
   const contact = settings?.contactInfo || {};
   const socials = settings?.socialLinks || {};
 

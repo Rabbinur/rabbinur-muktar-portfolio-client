@@ -23,6 +23,7 @@ function ExperienceModal({ exp, onClose }: { exp: any; onClose: () => void }) {
         {/* ক্লোজ বাটন */}
         <button
           onClick={onClose}
+          aria-label="Close experience details modal"
           className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 border border-slate-200 text-slate-500 hover:text-[#0f172a] transition-colors"
         >
           <X size={18} />
