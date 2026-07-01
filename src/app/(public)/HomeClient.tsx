@@ -4,26 +4,17 @@ import UltimatePortfolioLoader from "@/components/common/UltimatePortfolioLoader
 import About from "@/components/sections/about";
 import Hero from "@/components/sections/hero";
 import Services from "@/components/sections/service";
+import type { HomeExperience, HomeProject, HomeSettings } from "@/lib/homeApi";
 import { AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
-import {
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
-import type { HomeExperience, HomeProject, HomeSettings } from "@/lib/homeApi";
+import { useEffect, useLayoutEffect, useState } from "react";
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Isomorphic layout effect — useLayoutEffect on client, useEffect on server
-// Prevents the "useLayoutEffect does nothing on the server" SSR warning
-// ─────────────────────────────────────────────────────────────────────────────
+// Fires synchronously before browser paint → zero flash for return visitors
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-// ─────────────────────────────────────────────────────────────────────────────
 // Below-fold sections — dynamically imported to reduce initial JS bundle
-// This moves GSAP, Lenis, ScrollTrigger, react-icons out of the critical path
-// ─────────────────────────────────────────────────────────────────────────────
 const TechStackSection = dynamic(
   () => import("@/components/sections/tech-stack"),
   { ssr: true }
@@ -32,7 +23,6 @@ const Experience = dynamic(
   () => import("@/components/sections/experience"),
   { ssr: true }
 );
-// ssr: true — GSAP/Lenis are safe now with SSR checks inside projects.tsx
 const ProjectsSection = dynamic(
   () => import("@/components/sections/projects"),
   { ssr: true }
@@ -46,90 +36,69 @@ const Contact = dynamic(
   { ssr: true }
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Session key
-// ─────────────────────────────────────────────────────────────────────────────
 const LOADER_SESSION_KEY = "portfolio_loaded";
-
 const API_URL = "/api";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Props — all data server-fetched, zero client-side API calls
-// ─────────────────────────────────────────────────────────────────────────────
 interface HomeClientProps {
   settings: HomeSettings;
   projects: HomeProject[];
   experiences: HomeExperience[];
 }
 
-/**
- * HomeClient — Optimized for Lighthouse 100
- *
- * Loader Architecture (fixes LCP 71s → ~1.5s, CLS 1.0 → 0):
- * ─────────────────────────────────────────────────────────
- * BEFORE: null → useEffect → showLoader=true → loader → content
- *   LCP element hidden for entire loader duration (71s)
- *   null→content transition = CLS 1.0
- *
- * AFTER: SSR renders content → useLayoutEffect → loader overlay
- *   Content is in HTML from the start (Lighthouse sees it for LCP)
- *   useLayoutEffect fires synchronously AFTER hydration but BEFORE
- *   browser paints → loader appears before user sees anything
- *   Zero content flash, zero CLS
- *
- * TBT (fixes 39,320ms → ~500ms):
- * GSAP + Lenis + ScrollTrigger dynamically imported → not on critical path
- */
 export default function HomeClient({
   settings,
   projects,
   experiences,
 }: HomeClientProps) {
-  // Default false → content renders in SSR HTML (critical for LCP + SEO)
-  const [showLoader, setShowLoader] = useState(false);
+  /**
+   * Loader Strategy:
+   *
+   * useState(true) → Loader is in SSR HTML from the very first byte.
+   * The loader (fixed inset-0 z-[9999]) covers Navbar, Footer, and all
+   * page content — nothing is visible until loader completes.
+   *
+   * useIsomorphicLayoutEffect fires synchronously after DOM mutations
+   * but BEFORE the browser paints — so for return visitors the loader
+   * is removed before any pixel is drawn. Zero flash, zero layout shift.
+   *
+   * SSR (true) + Client hydration (true) = exact match → zero hydration mismatch.
+   */
+  const [showLoader, setShowLoader] = useState(true);
 
   useIsomorphicLayoutEffect(() => {
-    // Detect Lighthouse to bypass loader entirely during tests
-    const isLighthouse =
-      typeof window !== "undefined" &&
-      (navigator.userAgent.toLowerCase().includes("lighthouse") ||
-        navigator.userAgent.toLowerCase().includes("speed insights") ||
-        navigator.webdriver);
-
-    if (isLighthouse) {
-      return;
-    }
-
-    const alreadyLoaded =
-      sessionStorage.getItem(LOADER_SESSION_KEY) === "true";
-    if (!alreadyLoaded) {
-      setShowLoader(true);
+    try {
+      const alreadyLoaded =
+        sessionStorage.getItem(LOADER_SESSION_KEY) === "true";
+      if (alreadyLoaded) {
+        // Return visitor: remove loader before browser paints — no flash
+        setShowLoader(false);
+      }
+      // First visit: showLoader stays true, loader runs normally to 100%
+    } catch {
+      // sessionStorage unavailable (private mode edge case): skip loader
+      setShowLoader(false);
     }
   }, []);
 
   const handleLoaderComplete = () => {
-    sessionStorage.setItem(LOADER_SESSION_KEY, "true");
+    try {
+      sessionStorage.setItem(LOADER_SESSION_KEY, "true");
+    } catch {
+      // sessionStorage unavailable — graceful fallback
+    }
     setShowLoader(false);
   };
 
   return (
     <>
-      {/* Loader — fixed overlay (position:fixed → zero CLS, zero layout impact) */}
       <AnimatePresence>
         {showLoader && (
           <UltimatePortfolioLoader onComplete={handleLoaderComplete} />
         )}
       </AnimatePresence>
 
-      {/*
-        Content — ALWAYS rendered (in SSR HTML + client)
-        On first visit: loader overlays via fixed positioning
-        On return visits: immediately visible, no loader
-        Lighthouse always sees this HTML → correct LCP measurement
-      */}
-      <div className="flex flex-col min-h-screen">
+      <div className="portfolio-page-root flex flex-col min-h-screen">
         <main className="flex-grow">
-          {/* Above fold — SSR, critical for LCP */}
           <Hero
             settings={settings}
             apiUrl={API_URL}
@@ -137,8 +106,6 @@ export default function HomeClient({
           />
           <About settings={settings} projectCount={projects.length} />
           <Services settings={settings} projectCount={projects.length} />
-
-          {/* Below fold — dynamically imported, non-blocking */}
           <TechStackSection />
           <Experience experiences={experiences} />
           <ProjectsSection projects={projects} />

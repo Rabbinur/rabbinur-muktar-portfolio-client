@@ -200,7 +200,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}
         />
       </head>
-      <body className="bg-background text-foreground transition-colors duration-300 min-h-screen flex flex-col justify-between">
+      <body suppressHydrationWarning className="bg-background text-foreground transition-colors duration-300 min-h-screen flex flex-col justify-between">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
