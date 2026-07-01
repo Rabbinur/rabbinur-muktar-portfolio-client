@@ -11,6 +11,15 @@ const Provider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ReduxProvider store={store}>
       <PwaProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try {
+              if (!sessionStorage.getItem('portfolio_loaded')) {
+                document.documentElement.classList.add('portfolio-loading');
+              }
+            } catch (e) {}`,
+          }}
+        />
         <PwaRegister />
         <Toaster position="top-right" richColors />
         {children}

@@ -36,24 +36,6 @@ export default function UltimatePortfolioLoader({ onComplete }: { onComplete?: (
   ];
 
   useEffect(() => {
-    const checkLighthouse = () => {
-      if (typeof window === "undefined") return false;
-      return (
-        navigator.userAgent.toLowerCase().includes("lighthouse") ||
-        navigator.userAgent.toLowerCase().includes("speed insights") ||
-        navigator.webdriver
-      );
-    };
-
-    if (checkLighthouse()) {
-      setProgress(100);
-      setLogIndex(loadingLogs.length - 1);
-      if (onComplete) {
-        onComplete();
-      }
-      return;
-    }
-
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
