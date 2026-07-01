@@ -1,12 +1,12 @@
 "use client";
 
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Menu, Moon, Sun, X, Home, User, Code, Briefcase, Layers, Mail } from "lucide-react";
+import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
+import { Briefcase, Code, Home, Layers, Mail, Menu, Moon, Sun, User, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Navbar() {
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -164,7 +164,7 @@ export default function Navbar() {
               ))}
             </nav>
 
-            <div className="hi dden lg: flex items-center gap-4">
+            <div className="flex items-center gap-4">
               {/* {mounted && (
                 <button
                   onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}

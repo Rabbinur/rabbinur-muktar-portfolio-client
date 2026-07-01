@@ -15,7 +15,9 @@ import { useEffect, useRef, useState } from "react";
 import ProjectCard from "../common/ProjectCard/ProjectCard";
 import type { HomeProject } from "@/lib/homeApi";
 // GSAP প্লাগইন রেজিস্টার করা হলো
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 type Project = {
   id: string;
@@ -64,6 +66,7 @@ export default function ProjectsSection({ projects: rawProjects }: { projects: H
 
   useEffect(() => {
     if (!projects.length || !wrapperRef.current) return;
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
 
     // ১. smooth scrolling এর জন্য Lenis ইনিশিয়ালাইজ করা হলো
     const lenis = new Lenis({

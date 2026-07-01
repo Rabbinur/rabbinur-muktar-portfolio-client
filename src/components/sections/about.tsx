@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Code2, Database, Server, Sparkles } from "lucide-react";
 import ServicePills from "./Pill";
-import SkillCloud from "./SkillCloud";
 
 export interface AboutProps {
   settings: any;
